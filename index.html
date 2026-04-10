@@ -2399,6 +2399,42 @@ function assignPerson(pid){
   renderMgr();
 }
 
+function applyState(saved){
+  if(!saved) return;
+  if(saved.people)    S.people    = saved.people;
+  if(saved.scheds)    S.scheds    = saved.scheds;
+  if(saved.refreshes) S.refreshes = saved.refreshes;
+  if(saved.prefs)     S.prefs     = saved.prefs;
+  if(saved.messages)  S.messages  = saved.messages;
+  if(saved.broadcast) S.broadcast = saved.broadcast;
+  if(saved.cfg)       S.cfg       = Object.assign(S.cfg, saved.cfg);
+  if(saved.schedule)  S.schedule  = saved.schedule;
+  if(saved.nextId)    S.nid       = saved.nextId;
+  if(saved.nextRid)   S.nrid      = saved.nextRid;
+}
+function initFirebase(){
+  if(!window._fbLoad) return;
+  window._fbLoad().then(function(data){
+    if(data){
+      applyState(data);
+      localStorage.setItem('chamal_state', JSON.stringify(data));
+      if(S.mode==='manager') renderMgr();
+      else if(S.mode==='soldier') renderSol();
+    }
+    if(window._fbListen) window._fbListen(function(liveData){
+      applyState(liveData);
+      localStorage.setItem('chamal_state', JSON.stringify(liveData));
+      if(S.mode==='manager') renderMgr();
+      else if(S.mode==='soldier') renderSol();
+    });
+  });
+}
+document.addEventListener('firebase-ready', function(){
+  var el = document.getElementById('sbar-sync');
+  if(el) el.textContent = '☁️ מחובר לענן';
+  setTimeout(initFirebase, 300);
+});
+loadState();
 document.getElementById('slot-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.getElementById('alert-modal').addEventListener('click',function(e){if(e.target===this)closeAlert();});
 document.getElementById('broadcast-overlay').addEventListener('click',function(e){if(e.target===this)closeBroadcast();});
