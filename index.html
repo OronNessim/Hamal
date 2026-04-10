@@ -509,8 +509,17 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
     // Save to Firestore (called by saveState)
     window._fbSave = async function(data) {
       try {
+        var syncEl = document.getElementById('sbar-sync');
+        if(syncEl){ syncEl.textContent = '💾 שומר...'; syncEl.style.color = 'var(--gold)'; }
         await setDoc(DOC_REF, { payload: JSON.stringify(data) });
-      } catch(e) { console.warn('Firebase save error:', e); }
+        if(syncEl){ syncEl.textContent = '✅ נשמר'; syncEl.style.color = 'var(--green)';
+          setTimeout(function(){ var e2=document.getElementById('sbar-sync'); if(e2){e2.textContent='☁️ מחובר לענן';e2.style.color='var(--accent)';}}, 2000);
+        }
+      } catch(e) {
+        var syncEl = document.getElementById('sbar-sync');
+        if(syncEl){ syncEl.textContent = '❌ שגיאת שמירה'; syncEl.style.color = 'var(--red)'; }
+        console.warn('Firebase save error:', e);
+      }
     };
 
     // Listen for real-time updates from Firestore
