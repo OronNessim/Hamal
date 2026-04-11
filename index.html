@@ -550,7 +550,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
   <div class="login-unit">חמ"ל מלכ"א</div>
   <div class="login-sub">שולחן מרכזי</div>
   <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:-1rem;margin-bottom:1rem;letter-spacing:0.5px;">פותח ע"י אורון נסים</div>
-  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.0</div>
+  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.1</div>
 <div class="login-card">
     <div class="sec-label">כניסת מפקד</div>
     <input class="login-input" id="pw-input" type="password" placeholder="🔐 סיסמת מפקד" />
@@ -1621,6 +1621,7 @@ function clearAll(){
   const sc=getSched();
   for(let d=0;d<7;d++) for(let s=0;s<2;s++) sc[d][s]=Array(s===0?S.cfg.slotsDay:S.cfg.slotsNight).fill(null);
   renderMgr();
+  saveState();
 }
 
 // ── BROADCAST ───────────────────────────────────────────────
