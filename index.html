@@ -462,11 +462,15 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
   .week-nav{flex-wrap:wrap;gap:6px;}
   .week-nav-btn{font-size:11px;padding:6px 10px;}
   .week-nav-center{order:-1;width:100%;text-align:center;}
-  .tabs{overflow-x:auto;flex-wrap:nowrap;}
-  .tab{font-size:11px;padding:8px 10px;white-space:nowrap;}
+  .tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{font-size:10px;padding:7px 8px;white-space:nowrap;gap:3px;}
   .autofill-bar{flex-wrap:wrap;}
   .fbtn{font-size:11px;padding:6px 10px;}
-  .sc{min-width:80px;}
+  .stats-bar{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 12px;}
+  .sc{min-width:0;width:100%;padding:7px 10px;}
+  .sval{font-size:16px;}
+  .slabel{font-size:8px;}
   .shifts-row{grid-template-columns:1fr;}
   .shift-cell{border-left:none;border-bottom:1px solid var(--border);}
   .shift-cell:last-child{border-bottom:none;}
