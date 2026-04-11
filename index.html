@@ -951,7 +951,7 @@ function getDates(){
   return Array.from({length:7},(_,i)=>{const d=new Date(n);d.setDate(n.getDate()+i);return d;});
 }
 function fd(d){return d.getDate()+'/'+(d.getMonth()+1);}
-function ds(d){return d.toISOString().slice(0,10);}
+function ds(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+dd;}
 function wl(){const dd=getDates();return fd(dd[0])+' – '+fd(dd[6]);}
 function byId(id){return S.people.find(p=>p.id===id)||null;}
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -1481,6 +1481,7 @@ function doFill(override,milOnly){
     }
   }
   renderMgr();
+  saveState();
 }
 
 // SOLDIER
@@ -2431,13 +2432,13 @@ function initFirebase(){
   window._fbLoad().then(function(data){
     if(data){
       applyState(data);
-      localStorage.setItem('chamal_state', JSON.stringify(data));
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
       if(S.mode==='manager') renderMgr();
       else if(S.mode==='soldier') renderSol();
     }
     if(window._fbListen) window._fbListen(function(liveData){
       applyState(liveData);
-      localStorage.setItem('chamal_state', JSON.stringify(liveData));
+      localStorage.setItem(LS_KEY, JSON.stringify(liveData));
       if(S.mode==='manager') renderMgr();
       else if(S.mode==='soldier') renderSol();
     });
