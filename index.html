@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>חמ"ל שולחן מרכזי — מלכ"א</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00d4aa">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="חמ&quot;ל מלכ&quot;א">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--bg:#07090f;--surface:#0e1420;--surface2:#151e30;--surface3:#1c2840;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--accent:#00d4aa;--accent2:#00a884;--accent-glow:rgba(0,212,170,0.15);--gold:#f5a623;--gold-glow:rgba(245,166,35,0.15);--red:#ff4757;--green:#2ecc71;--yellow:#f39c12;--text:#e8edf5;--muted:#4a6080;--muted2:#6b8aaa;--miluim:#f5a623;--sadir:#4fc3f7;--katzin:#ce93d8;--scan-line:rgba(0,212,170,0.025);}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -2518,5 +2525,14 @@ setTimeout(function(){var ov=document.getElementById('tzav8-edit-overlay');if(ov
   </div>
 </div>
 
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/Hamal/sw.js').then(function(reg){
+      console.log('SW registered');
+    }).catch(function(e){ console.warn('SW error', e); });
+  });
+}
+</script>
 </body>
 </html>
