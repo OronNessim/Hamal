@@ -403,6 +403,41 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 .soldier-item:nth-child(6){animation:slideRight .25s .23s ease both;}
 
 
+.msg-badge{font-size:9px;font-weight:700;background:var(--accent);color:#000;border-radius:8px;padding:1px 6px;margin-right:4px;}
+.chat-wrap{display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 160px);}
+.thread-list{display:flex;flex-direction:column;gap:6px;padding:12px 16px;overflow-y:auto;flex:1;min-height:0;}
+.thread-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;}
+.thread-item:hover{border-color:var(--accent);background:var(--surface2);}
+.thread-item.has-unread{border-color:rgba(0,212,170,.4);background:rgba(0,212,170,.04);}
+.thread-avatar{width:38px;height:38px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent);flex-shrink:0;}
+.thread-info{flex:1;min-width:0;}
+.thread-name{font-size:14px;font-weight:700;color:var(--text);}
+.thread-preview{font-size:11px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.thread-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.thread-time{font-size:10px;color:var(--muted2);}
+.thread-badge{background:var(--accent);color:#000;font-size:9px;font-weight:700;border-radius:10px;padding:1px 6px;}
+.chat-messages{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--bg);min-height:0;width:100%;}
+.chat-messages::-webkit-scrollbar{width:3px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.chat-bubble-wrap{display:flex;flex-direction:column;max-width:78%;width:fit-content;}
+.chat-bubble-wrap.me{align-self:flex-end;align-items:flex-end;margin-right:8px;}
+.chat-bubble-wrap.them{align-self:flex-start;align-items:flex-start;margin-left:8px;}
+.chat-name{font-size:10px;font-weight:700;color:var(--accent);margin-bottom:2px;padding:0 4px;}
+.chat-bubble{padding:9px 13px;border-radius:18px;font-size:13px;line-height:1.6;position:relative;}
+.chat-bubble-wrap.me .chat-bubble{background:var(--accent2);color:#000;border-bottom-right-radius:4px;}
+.chat-bubble-wrap.them .chat-bubble{background:var(--surface2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border);}
+.chat-bubble-wrap.reply .chat-bubble{background:rgba(245,166,35,.15);color:var(--gold);border:1px solid rgba(245,166,35,.25);border-bottom-right-radius:4px;}
+.chat-meta{display:flex;align-items:center;gap:5px;margin-top:3px;padding:0 4px;}
+.chat-time{font-size:10px;color:var(--muted2);}
+.chat-unread{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+.chat-input-bar{display:flex;align-items:flex-end;gap:8px;padding:10px 14px;background:var(--surface);border-top:1px solid var(--border);}
+.chat-input{flex:1;padding:10px 14px;border-radius:22px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Heebo',sans-serif;font-size:13px;direction:rtl;resize:none;max-height:120px;min-height:40px;line-height:1.5;outline:none;transition:border-color .15s;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-send-btn{width:40px;height:40px;border-radius:50%;background:var(--accent);border:none;color:#000;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.chat-send-btn:hover{background:var(--accent2);transform:scale(1.05);}
+.chat-reply-bar{padding:8px 14px;background:var(--surface2);border-top:1px solid var(--border);border-left:3px solid var(--gold);font-size:11px;color:var(--gold);display:none;align-items:center;gap:8px;}
+.chat-reply-bar.open{display:flex;}
+.chat-reply-cancel{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;padding:0;}
 .msg-send-wrap{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
 .msg-title{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;}
 .msg-textarea{width:100%;padding:10px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Heebo',sans-serif;font-size:13px;direction:rtl;resize:vertical;min-height:80px;line-height:1.6;transition:border-color .15s;}
@@ -415,7 +450,6 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 .msg-time{font-size:10px;color:var(--muted2);}
 .msg-body{font-size:13px;color:var(--muted2);line-height:1.6;}
 .msg-unread-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;}
-.msg-badge{font-size:9px;font-weight:700;background:var(--accent);color:#000;border-radius:8px;padding:1px 6px;margin-right:4px;}
 
 
 .fill-config-modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;position:relative;animation:modalIn .25s ease;}
@@ -466,6 +500,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 
 
 @media(max-width:600px){
+  .hright .icon-btn{display:flex!important;}
   .week-nav{flex-wrap:wrap;gap:6px;}
   .week-nav-btn{font-size:11px;padding:6px 10px;}
   .week-nav-center{order:-1;width:100%;text-align:center;}
@@ -561,7 +596,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
   <div class="login-unit">חמ"ל מלכ"א</div>
   <div class="login-sub">שולחן מרכזי</div>
   <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:-1rem;margin-bottom:1rem;letter-spacing:0.5px;">פותח ע"י אורון נסים</div>
-  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.1</div>
+  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.2</div>
 <div class="login-card">
     <div class="sec-label">כניסת מפקד</div>
     <input class="login-input" id="pw-input" type="password" placeholder="🔐 סיסמת מפקד" />
@@ -592,6 +627,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
     </div>
     <div class="hright">
       <span class="mode-badge" id="mode-badge">מפקד</span>
+      <button class="icon-btn" id="back-btn" onclick="goBack()" title="חזור" style="display:none;">←</button>
       <button class="icon-btn" onclick="cycleFont()" title="גודל גופן" id="font-btn">א</button>
       <button class="icon-btn" onclick="toggleTheme()" title="מצב תצוגה" id="theme-btn">☀️</button>
       <button class="icon-btn" onclick="logout()" title="יציאה">⏻</button>
@@ -624,6 +660,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
         <button class="fbtn fbtn-fill" onclick="openFillConfig(false)">השלם ריקות</button>
         <button class="fbtn fbtn-over" onclick="openFillConfig(true)">סדר הכל מחדש</button>
         <button class="fbtn" style="background:var(--surface2);color:var(--red);border:1px solid rgba(255,71,87,.35);" onclick="clearAll()">נקה הכל</button>
+        <button class="fbtn" id="undo-btn" style="background:var(--surface2);color:var(--muted2);border:1px solid var(--border);display:none;" onclick="undoLastChange()">↩ בטל</button>
       </div>
       <div class="stats-bar" id="stats-bar"></div>
       <div class="sch-container" id="sch-grid"></div>
@@ -657,8 +694,21 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
     </div>
 
     <div class="tab-content" id="tab-messages-mgr">
-      <div class="msg-list" id="mgr-msg-list">
-        <div style="font-size:13px;color:var(--muted2);text-align:center;padding:2rem;">אין הודעות עדיין</div>
+      <div class="chat-wrap" id="mgr-threads-view">
+        <div class="thread-list" id="mgr-thread-list">
+          <div style="text-align:center;font-size:12px;color:var(--muted2);padding:2rem;">אין הודעות עדיין</div>
+        </div>
+      </div>
+      <div class="chat-wrap" id="mgr-chat-view" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);">
+          <button class="icon-btn" onclick="closeMgrThread()" style="font-size:16px;">←</button>
+          <span id="mgr-chat-title" style="font-size:14px;font-weight:700;"></span>
+        </div>
+        <div class="chat-messages" id="mgr-msg-list"></div>
+        <div class="chat-input-bar">
+          <button class="chat-send-btn" onclick="sendMgrReply()">➤</button>
+          <textarea class="chat-input" id="mgr-reply-input" placeholder="כתוב תגובה..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMgrReply();}"></textarea>
+        </div>
       </div>
     </div>
 
@@ -716,7 +766,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
         </div>
 
         <div style="margin-top:8px;padding:12px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);text-align:center;">
-          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.0.0</div>
+          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.0.2</div>
           <div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:4px;">פותח ע"י אורון נסים</div>
         </div>
       </div>
@@ -872,11 +922,14 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
     </div>
 
     <div id="sol-tab-messages" style="display:none;">
-      <div class="msg-send-wrap">
-        <div class="msg-title">שלח הצעת שיפור למפקד</div>
-        <textarea class="msg-textarea" id="sol-msg-input" placeholder="כתוב הצעה, שאלה, הערה..."></textarea>
-        <button class="badd" onclick="sendMsg()">שלח הודעה</button>
-        <div id="sol-msg-sent" style="font-size:12px;color:var(--green);min-height:14px;"></div>
+      <div class="chat-wrap">
+        <div class="chat-messages" id="sol-chat-messages">
+          <div style="text-align:center;font-size:12px;color:var(--muted2);padding:1rem;">כאן תופיע השיחה עם המפקד</div>
+        </div>
+        <div class="chat-input-bar">
+          <button class="chat-send-btn" onclick="sendMsg()">➤</button>
+          <textarea class="chat-input" id="sol-msg-input" placeholder="כתוב הודעה..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+        </div>
       </div>
     </div>
   </div>
@@ -1009,6 +1062,18 @@ function enterSol(p){
   setTimeout(checkBroadcast, 600);
 }
 function backToLogin(){document.getElementById('soldier-select-screen').style.display='none';document.getElementById('login-screen').style.display='flex';}
+var _navHistory = [];
+function pushNav(tab){ _navHistory.push(tab); document.getElementById('back-btn').style.display='flex'; }
+function goBack(){
+  _navHistory.pop();
+  if(_navHistory.length > 0){
+    var prev = _navHistory[_navHistory.length-1];
+    if(S.mode==='manager') switchTab(prev, true);
+    else solTab(prev, true);
+  } else {
+    document.getElementById('back-btn').style.display='none';
+  }
+}
 function logout(){
   S.mode=null;S.user=null;S.week=0;
   document.getElementById('main-app').style.display='none';
@@ -1019,11 +1084,19 @@ function logout(){
 }
 
 // TABS
-function switchTab(t){
+function switchTab(t, isBack){
+  if(!isBack && t!=='schedule') pushNav(t);
   document.querySelectorAll('#manager-view .tab').forEach(x=>x.classList.remove('active'));
   const tabs=['schedule','people','schedule-mgr','messages-mgr','help-mgr','settings'];
   const idx=tabs.indexOf(t);
   if(idx>=0) document.querySelectorAll('#manager-view .tab')[idx].classList.add('active');
+  if(t==='messages-mgr'){
+    document.getElementById('mgr-threads-view').style.display='flex';
+    document.getElementById('mgr-threads-view').style.flexDirection='column';
+    document.getElementById('mgr-chat-view').style.display='none';
+    _mgrCurrentThread=null;
+    setTimeout(renderMgrMessages, 50);
+  }
   document.querySelectorAll('#manager-view .tab-content').forEach(x=>x.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
   if(t==='people')renderPeople();
@@ -1047,6 +1120,7 @@ function changePw(){
   if(!n){m.style.color='var(--red)';m.textContent='הסיסמה החדשה ריקה';return;}
   S.pw=n;document.getElementById('pw-old').value='';document.getElementById('pw-new').value='';
   m.style.color='var(--green)';m.textContent='הסיסמה שונתה!';setTimeout(()=>m.textContent='',3000);
+  saveState();
 }
 function renderSettings(){
   document.getElementById('miluim-max').value=S.cfg.miluimMax;
@@ -1099,7 +1173,7 @@ function renderStats(dates){
       tot++;if(sc[d][s][sl]!=null){fil++;if(mc[sc[d][s][sl]]!==undefined)mc[sc[d][s][sl]]++;}
     }}
   }
-  const emp=tot-fil,ov=Object.values(mc).filter(c=>c>S.cfg.miluimMax).length;
+  const emp=tot-fil,milPeople=S.people.filter(p=>p.role==='miluim'),ov=milPeople.filter(p=>mc[p.id]!==undefined&&(mc[p.id]>S.cfg.miluimMax||mc[p.id]<S.cfg.miluimMax)).length;
   document.getElementById('stats-bar').innerHTML=`
     <div class="sc"><div class="slabel">משבצות</div><div class="sval ${fil===tot?'ok':fil>tot*.7?'warn':'bad'}">${fil}/${tot}</div></div>
     <div class="sc"><div class="slabel">חסרים</div><div class="sval ${emp===0?'ok':emp<5?'warn':'bad'}">${emp}</div></div>
@@ -1351,8 +1425,8 @@ function renderML(q){
   });
 }
 function filterM(){renderML(document.getElementById('m-search').value);}
-function assignP(pid){const{di,si,slot}=S.slot;getSched()[di][si][slot]=pid;closeModal();renderMgr();saveState();}
-function clearSlot(){const{di,si,slot}=S.slot;getSched()[di][si][slot]=null;closeModal();renderMgr();saveState();}
+function assignP(pid){pushUndo();const{di,si,slot}=S.slot;getSched()[di][si][slot]=pid;closeModal();renderMgr();saveState();}
+function clearSlot(){pushUndo();const{di,si,slot}=S.slot;getSched()[di][si][slot]=null;closeModal();renderMgr();saveState();}
 function closeModal(){document.getElementById('slot-modal').classList.remove('open');S.slot=null;}
 function closeAlert(){document.getElementById('alert-modal').classList.remove('open');}
 
@@ -1630,6 +1704,7 @@ function cancelAllTzav8(){
   document.body.appendChild(msg);setTimeout(()=>msg.remove(),3000);
 }
 function clearAll(){
+  pushUndo();
   const sc=getSched();
   for(let d=0;d<7;d++) for(let s=0;s<2;s++) sc[d][s]=Array(s===0?S.cfg.slotsDay:S.cfg.slotsNight).fill(null);
   renderMgr();
@@ -1655,6 +1730,7 @@ function clearBroadcast(){
   var st = document.getElementById('broadcast-status');
   st.style.color = 'var(--muted2)';
   st.textContent = 'ההודעה נמחקה';
+  saveState();
 }
 function checkBroadcast(){
   if(!S.broadcast || !S.broadcast.text || !S.broadcast.published) return;
@@ -1676,7 +1752,8 @@ function closeBroadcast(){
 
 
 // ── SOLDIER TABS ─────────────────────────────────────────
-function solTab(t){
+function solTab(t, isBack){
+  if(!isBack && t!=='shifts') pushNav(t);
   document.querySelectorAll('#sol-tabs .tab').forEach(x=>x.classList.remove('active'));
   const tabs=['shifts','schedule','help','messages'];
   document.querySelectorAll('#sol-tabs .tab')[tabs.indexOf(t)].classList.add('active');
@@ -1684,67 +1761,197 @@ function solTab(t){
   document.getElementById('sol-tab-schedule').style.display=t==='schedule'?'block':'none';
   var helpEl=document.getElementById('sol-tab-help');if(helpEl)helpEl.style.display=t==='help'?'block':'none';
   document.getElementById('sol-tab-messages').style.display=t==='messages'?'block':'none';
+  if(t==='messages') setTimeout(renderSolChat, 50);
   if(t==='schedule') renderSolFullSchedule();
   if(t==='messages') markMsgsRead();
 }
 
 // ── MESSAGES ─────────────────────────────────────────────
+var _mgrCurrentThread = null;
+var _undoStack = [];
+var _maxUndo = 10;
+function pushUndo(){
+  var snapshot = JSON.stringify(getSched());
+  _undoStack.push(snapshot);
+  if(_undoStack.length > _maxUndo) _undoStack.shift();
+  var btn = document.getElementById('undo-btn');
+  if(btn) btn.style.display='inline-block';
+}
+function undoLastChange(){
+  if(!_undoStack.length) return;
+  var prev = JSON.parse(_undoStack.pop());
+  S.scheds[S.week] = prev;
+  renderMgr();
+  saveState();
+  var btn = document.getElementById('undo-btn');
+  if(btn && !_undoStack.length) btn.style.display='none';
+  showToast('↩ השינוי בוטל','var(--accent)');
+}
 function sendMsg(){
   const txt=document.getElementById('sol-msg-input').value.trim();
-  if(!txt) return;
-  const p=S.user;
+  if(!txt||!S.user) return;
+  if(!S.messages) S.messages=[];
   S.messages.push({
     id: Date.now(),
-    from: p.name,
-    role: p.role,
+    from: S.user.name,
+    role: S.user.role,
     text: txt,
     time: new Date().toISOString(),
-    read: false
+    read: false,
+    sender: 'soldier',
+    to: 'manager'
   });
   document.getElementById('sol-msg-input').value='';
-  const st=document.getElementById('sol-msg-sent');
-  st.textContent='✓ ההודעה נשלחה למפקד';
-  setTimeout(()=>st.textContent='',3000);
+  document.getElementById('sol-msg-input').style.height='auto';
+  saveState();
+  renderSolChat();
   updateMsgBadges();
 }
-
-function renderMgrMessages(){
+function sendMgrReply(){
+  const txt=document.getElementById('mgr-reply-input').value.trim();
+  if(!txt||!_mgrCurrentThread) return;
+  S.messages.push({
+    id: Date.now(),
+    from: 'מפקד',
+    role: 'katzin',
+    text: txt,
+    time: new Date().toISOString(),
+    read: true,
+    sender: 'manager',
+    to: _mgrCurrentThread
+  });
+  document.getElementById('mgr-reply-input').value='';
+  document.getElementById('mgr-reply-input').style.height='auto';
+  saveState();
+  renderMgrThread(_mgrCurrentThread);
+  updateMsgBadges();
+}
+function openMgrThread(soldierName){
+  _mgrCurrentThread = soldierName;
+  document.getElementById('mgr-threads-view').style.display='none';
+  document.getElementById('mgr-chat-view').style.display='flex';
+  document.getElementById('mgr-chat-view').style.flexDirection='column';
+  document.getElementById('mgr-chat-title').textContent=soldierName;
+  // mark soldier messages as read
+  S.messages.forEach(function(m){ if(m.from===soldierName && m.sender==='soldier') m.read=true; });
+  saveState();
+  updateMsgBadges();
+  renderMgrThread(soldierName);
+}
+function closeMgrThread(){
+  _mgrCurrentThread=null;
+  document.getElementById('mgr-chat-view').style.display='none';
+  document.getElementById('mgr-threads-view').style.display='flex';
+  document.getElementById('mgr-threads-view').style.flexDirection='column';
+  renderMgrMessages();
+}
+function renderMgrThread(soldierName){
   const el=document.getElementById('mgr-msg-list');
   if(!el) return;
-  if(!S.messages.length){
-    el.innerHTML='<div style="font-size:13px;color:var(--muted2);text-align:center;padding:2rem;">אין הודעות עדיין</div>';
+  const thread = S.messages.filter(function(m){ if(!m.sender)m.sender='soldier'; return m.from===soldierName||m.to===soldierName; });
+  el.innerHTML='';
+  if(!thread.length){
+    el.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted2);padding:1rem;">אין הודעות עדיין</div>';
+    el.scrollTop=el.scrollHeight; return;
+  }
+  thread.forEach(function(msg){
+    const isMgr=msg.sender==='manager';
+    const wrap=document.createElement('div');
+    wrap.className='chat-bubble-wrap '+(isMgr?'me':'them');
+    const d=new Date(msg.time);
+    const t=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    wrap.innerHTML='<div class="chat-bubble">'+msg.text+'</div>';
+    wrap.innerHTML+='<div class="chat-meta"><span class="chat-time">'+t+'</span></div>';
+    el.appendChild(wrap);
+  });
+  el.scrollTop=el.scrollHeight;
+}
+function renderSolChat(){
+  const el=document.getElementById('sol-chat-messages');
+  if(!el||!S.user) return;
+  const myName=S.user.name;
+  if(!S.messages) S.messages=[];
+  const thread=S.messages.filter(function(m){
+    if(!m.sender) m.sender='soldier';
+    return m.from===myName||(m.sender==='manager'&&m.to===myName);
+  });
+  el.innerHTML='';
+  if(!thread.length){
+    el.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted2);padding:1rem;">כאן תופיע השיחה עם המפקד</div>';
     return;
   }
-  const sorted=[...S.messages].reverse();
-  el.innerHTML='';
-  sorted.forEach(function(msg){
-    const card=document.createElement('div');
-    card.className='msg-card'+(msg.read?'':' unread');
+  thread.forEach(function(msg){
+    if(!msg.sender) msg.sender='soldier';
+    const isMe=msg.sender==='soldier';
+    const wrap=document.createElement('div');
+    wrap.className='chat-bubble-wrap '+(isMe?'me':'them');
     const d=new Date(msg.time);
-    const timeStr=d.toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'});
-    card.innerHTML='<div class="msg-card-header">'
-      +'<div style="display:flex;align-items:center;gap:7px;">'
-      +(msg.read?'':'<div class="msg-unread-dot"></div>')
-      +'<span class="msg-sender">'+msg.from+'</span>'
-      +'<span class="role-tag tag-'+(msg.role==='miluim'?'miluim':msg.role==='katzin'?'katzin':'sadir')+'">'+{miluim:'מילואים',sadir:'סדיר',katzin:'איש קבע'}[msg.role]+'</span>'
-      +'</div><span class="msg-time">'+timeStr+'</span></div>'
-      +'<div class="msg-body">'+msg.text+'</div>';
-    // Mark read when clicked
-    card.onclick=function(){ msg.read=true; card.classList.remove('unread'); updateMsgBadges(); };
-    el.appendChild(card);
+    const t=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    if(!isMe) wrap.innerHTML='<div class="chat-name">מפקד</div>';
+    wrap.innerHTML+='<div class="chat-bubble">'+msg.text+'</div>';
+    wrap.innerHTML+='<div class="chat-meta"><span class="chat-time">'+t+'</span></div>';
+    el.appendChild(wrap);
+  });
+  el.scrollTop=el.scrollHeight;
+}
+function renderMgrMessages(){
+  const el=document.getElementById('mgr-thread-list');
+  if(!el) return;
+  if(!S.messages||!S.messages.length){
+    el.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted2);padding:2rem;">אין הודעות עדיין</div>';
+    return;
+  }
+  const threads={};
+  S.messages.forEach(function(m){
+    if(!m.sender) m.sender='soldier';
+    const key=m.sender==='soldier'?m.from:m.to;
+    if(!key||key==='manager') return;
+    if(!threads[key]) threads[key]={name:key,msgs:[],unread:0};
+    threads[key].msgs.push(m);
+    if(!m.read&&m.sender==='soldier') threads[key].unread++;
+  });
+  el.innerHTML='';
+  const sorted=Object.values(threads).sort(function(a,b){
+    const at=a.msgs[a.msgs.length-1].time,bt=b.msgs[b.msgs.length-1].time;
+    return bt>at?1:-1;
+  });
+  if(!sorted.length){
+    el.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted2);padding:2rem;">אין הודעות עדיין</div>';
+    return;
+  }
+  sorted.forEach(function(thread){
+    const last=thread.msgs[thread.msgs.length-1];
+    const d=new Date(last.time);
+    const t=d.getDate()+'/'+(d.getMonth()+1)+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    const initials=thread.name.slice(0,2);
+    const item=document.createElement('div');
+    item.className='thread-item'+(thread.unread?' has-unread':'');
+    item.innerHTML='<div class="thread-avatar">'+initials+'</div>'
+      +'<div class="thread-info"><div class="thread-name">'+thread.name+'</div>'
+      +'<div class="thread-preview">'+(last.sender==='manager'?'אתה: ':'')+last.text+'</div></div>'
+      +'<div class="thread-meta"><span class="thread-time">'+t+'</span>'
+      +(thread.unread?'<span class="thread-badge">'+thread.unread+'</span>':'')+'</div>';
+    item.onclick=function(){ openMgrThread(thread.name); };
+    el.appendChild(item);
   });
 }
-
 function markMsgsRead(){
-  // mark all read from this user's perspective (soldier seeing their sent messages)
+  if(!S.user||!S.messages) return;
+  S.messages.forEach(function(m){
+    if(m.sender==='manager'&&m.to===S.user.name) m.read=true;
+  });
+  updateMsgBadges();
 }
-
 function updateMsgBadges(){
-  const unread=S.messages.filter(m=>!m.read).length;
+  if(!S.messages) S.messages=[];
+  const mgrUnread=S.messages.filter(function(m){return !m.read&&m.sender==='soldier';}).length;
   const mb=document.getElementById('mgr-msg-badge');
   const sb=document.getElementById('sol-msg-badge');
-  if(mb){ mb.textContent=unread; mb.style.display=unread>0?'inline':'none'; }
-  if(sb){ sb.style.display='none'; }
+  if(mb){ mb.textContent=mgrUnread; mb.style.display=mgrUnread>0?'inline':'none'; }
+  if(sb){
+    const solUnread = S.user ? S.messages.filter(function(m){return m.sender==='manager'&&m.to===S.user.name&&!m.read;}).length : 0;
+    sb.textContent=solUnread; sb.style.display=solUnread>0?'inline':'none';
+  }
 }
 
 // ── FULL SCHEDULE FOR SOLDIER ─────────────────────────────
@@ -1903,6 +2110,7 @@ function doFillWithConfig(override, milOnly){
   // and exclude people from being assigned
   // We do this by modifying doFill's pool selection
   // Store overrides globally so doFill can read them
+  pushUndo();
   window._fillExcludedGlobal = _fillExcluded;
   window._fillOverridesGlobal = _fillShiftOverrides;
   doFill(override, milOnly);
