@@ -532,6 +532,24 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 }
 
 #main-app{display:none;position:relative;z-index:1;}
+
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  header, .sbar, .tabs, .autofill-bar, .stats-bar, .week-nav,
+  #login-screen, #soldier-select-screen, .modal-overlay,
+  .broadcast-overlay, #tour-overlay, #fill-config-modal,
+  #tzav8-edit-overlay, #alert-modal, #slot-modal { display: none !important; }
+  #main-app { display: block !important; }
+  #manager-view { display: block !important; }
+  .tab-content { display: none !important; }
+  #tab-schedule { display: block !important; }
+  .day-block { break-inside: avoid; border: 1px solid #ccc !important; background: #fff !important; }
+  .dh { background: #f5f5f5 !important; }
+  .slot { border: 1px solid #eee !important; }
+  .sname { color: #000 !important; }
+  .role-tag { border: 1px solid #ccc !important; color: #333 !important; background: #f0f0f0 !important; }
+  body::before, body::after { display: none !important; }
+}
 </style>
 
   <!-- Firebase SDK -->
@@ -596,7 +614,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
   <div class="login-unit">חמ"ל מלכ"א</div>
   <div class="login-sub">שולחן מרכזי</div>
   <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:-1rem;margin-bottom:1rem;letter-spacing:0.5px;">פותח ע"י אורון נסים</div>
-  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.2</div>
+  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.3</div>
 <div class="login-card">
     <div class="sec-label">כניסת מפקד</div>
     <input class="login-input" id="pw-input" type="password" placeholder="🔐 סיסמת מפקד" />
@@ -766,7 +784,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
         </div>
 
         <div style="margin-top:8px;padding:12px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);text-align:center;">
-          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.0.2</div>
+          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.0.3</div>
           <div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:4px;">פותח ע"י אורון נסים</div>
         </div>
       </div>
@@ -853,6 +871,35 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
               <button class="badd" onclick="changePw()">שנה</button>
             </div>
             <div class="pwmsg" id="pw-change-msg"></div>
+          </div>
+        </div>
+
+        <div class="sett-sec">
+          <div class="sett-hdr">💾 גיבוי ושחזור</div>
+          <div class="sett-item">
+            <div class="sit-info"><div class="sit-title">ייצוא נתונים</div><div class="sit-desc">שמור קובץ גיבוי של כל הנתונים</div></div>
+            <button class="bsm" style="background:rgba(0,212,170,.1);color:var(--accent);border:1px solid rgba(0,212,170,.3);" onclick="exportData()">ייצא</button>
+          </div>
+          <div class="sett-item">
+            <div class="sit-info"><div class="sit-title">ייבוא נתונים</div><div class="sit-desc">שחזר מקובץ גיבוי (ידרוס נתונים קיימים)</div></div>
+            <label class="bsm" style="background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.3);cursor:pointer;">ייבא<input type="file" accept=".json" style="display:none;" onchange="importData(this)"/></label>
+          </div>
+          <div id="backup-msg" style="font-size:11px;min-height:14px;padding:0 14px 10px;"></div>
+        </div>
+
+        <div class="sett-sec">
+          <div class="sett-hdr">🖨️ הדפסה</div>
+          <div class="sett-item">
+            <div class="sit-info"><div class="sit-title">הדפס לוח משמרות</div><div class="sit-desc">שבוע נוכחי — מותאם להדפסה ו-PDF</div></div>
+            <button class="bsm" style="background:rgba(0,212,170,.1);color:var(--accent);border:1px solid rgba(0,212,170,.3);" onclick="printSchedule()">הדפס</button>
+          </div>
+        </div>
+
+        <div class="sett-sec">
+          <div class="sett-hdr">🔔 התראות</div>
+          <div class="sett-item">
+            <div class="sit-info"><div class="sit-title">התראות הודעות</div><div class="sit-desc">קבל התראת דפדפן כשחייל שולח הודעה</div></div>
+            <button class="bsm" id="notif-btn" style="background:rgba(0,212,170,.1);color:var(--accent);border:1px solid rgba(0,212,170,.3);" onclick="requestNotifications()">הפעל</button>
           </div>
         </div>
 
@@ -1806,6 +1853,8 @@ function sendMsg(){
   saveState();
   renderSolChat();
   updateMsgBadges();
+  // notify manager if page open
+  sendNotification('הודעה חדשה מ-'+S.user.name, txt);
 }
 function sendMgrReply(){
   const txt=document.getElementById('mgr-reply-input').value.trim();
@@ -2665,6 +2714,88 @@ document.addEventListener('firebase-ready', function(){
   setTimeout(initFirebase, 300);
 });
 loadState();
+
+// ── EXPORT / IMPORT ─────────────────────────────────────
+function exportData(){
+  var data = {
+    version: '1.0.3',
+    exported: new Date().toISOString(),
+    people: S.people,
+    scheds: S.scheds,
+    refreshes: S.refreshes,
+    messages: S.messages,
+    cfg: S.cfg,
+    schedule: S.schedule,
+    nextId: S.nid,
+    nextRid: S.nrid
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'hamal-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  var m = document.getElementById('backup-msg');
+  if(m){ m.style.color='var(--green)'; m.textContent='✓ הגיבוי הורד בהצלחה'; setTimeout(function(){ m.textContent=''; }, 3000); }
+}
+function importData(input){
+  var file = input.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var data = JSON.parse(e.target.result);
+      if(!confirm('⚠️ ייבוא יידרוס את כל הנתונים הקיימים. להמשיך?')) return;
+      if(data.people) S.people = data.people;
+      if(data.scheds) S.scheds = data.scheds;
+      if(data.refreshes) S.refreshes = data.refreshes;
+      if(data.messages) S.messages = data.messages;
+      if(data.cfg) S.cfg = Object.assign(S.cfg, data.cfg);
+      if(data.schedule) S.schedule = data.schedule;
+      if(data.nextId) S.nid = data.nextId;
+      if(data.nextRid) S.nrid = data.nextRid;
+      saveState();
+      if(S.mode==='manager') renderMgr();
+      var m = document.getElementById('backup-msg');
+      if(m){ m.style.color='var(--green)'; m.textContent='✓ הנתונים יובאו בהצלחה'; setTimeout(function(){ m.textContent=''; }, 3000); }
+    } catch(err) {
+      var m = document.getElementById('backup-msg');
+      if(m){ m.style.color='var(--red)'; m.textContent='❌ קובץ לא תקין'; }
+    }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+// ── PRINT ────────────────────────────────────────────────
+function printSchedule(){
+  // Switch to schedule tab before printing
+  switchTab('schedule');
+  setTimeout(function(){ window.print(); }, 300);
+}
+
+// ── NOTIFICATIONS ────────────────────────────────────────
+var _notifEnabled = false;
+function requestNotifications(){
+  if(!('Notification' in window)){
+    showToast('הדפדפן שלך לא תומך בהתראות','var(--red)');
+    return;
+  }
+  Notification.requestPermission().then(function(perm){
+    _notifEnabled = perm === 'granted';
+    var btn = document.getElementById('notif-btn');
+    if(_notifEnabled){
+      if(btn){ btn.textContent='✓ פעיל'; btn.style.color='var(--green)'; }
+      showToast('✓ התראות הופעלו','var(--green)');
+    } else {
+      showToast('לא ניתן להפעיל התראות','var(--red)');
+    }
+  });
+}
+function sendNotification(title, body){
+  if(!_notifEnabled || Notification.permission !== 'granted') return;
+  try { new Notification(title, {body:body, icon:'/Hamal/icon-192.png'}); } catch(e){}
+}
+
 document.getElementById('slot-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.getElementById('alert-modal').addEventListener('click',function(e){if(e.target===this)closeAlert();});
 document.getElementById('broadcast-overlay').addEventListener('click',function(e){if(e.target===this)closeBroadcast();});
