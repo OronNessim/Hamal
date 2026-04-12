@@ -534,21 +534,75 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 #main-app{display:none;position:relative;z-index:1;}
 
 @media print {
-  body { background: #fff !important; color: #000 !important; }
+  * { -webkit-print-color-adjust: exact; color-adjust: exact; }
+  body { background: #fff !important; color: #000 !important; font-family: Arial, sans-serif !important; }
+  body::before, body::after { display: none !important; }
+
+  /* Hide everything except the schedule grid */
   header, .sbar, .tabs, .autofill-bar, .stats-bar, .week-nav,
   #login-screen, #soldier-select-screen, .modal-overlay,
   .broadcast-overlay, #tour-overlay, #fill-config-modal,
-  #tzav8-edit-overlay, #alert-modal, #slot-modal { display: none !important; }
-  #main-app { display: block !important; }
-  #manager-view { display: block !important; }
+  #tzav8-edit-overlay, #alert-modal, #slot-modal,
+  #tab-people, #tab-schedule-mgr, #tab-messages-mgr,
+  #tab-help-mgr, #tab-settings { display: none !important; }
+
+  #main-app, #manager-view { display: block !important; }
   .tab-content { display: none !important; }
   #tab-schedule { display: block !important; }
-  .day-block { break-inside: avoid; border: 1px solid #ccc !important; background: #fff !important; }
-  .dh { background: #f5f5f5 !important; }
-  .slot { border: 1px solid #eee !important; }
-  .sname { color: #000 !important; }
-  .role-tag { border: 1px solid #ccc !important; color: #333 !important; background: #f0f0f0 !important; }
-  body::before, body::after { display: none !important; }
+
+  /* Print header */
+  #tab-schedule::before {
+    content: 'חמ"ל מלכ"א — לוח משמרות שבועי';
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #000;
+    direction: rtl;
+  }
+
+  .sch-container { padding: 0 !important; }
+  .day-block {
+    break-inside: avoid;
+    border: 1.5px solid #333 !important;
+    background: #fff !important;
+    margin-bottom: 10px !important;
+    border-radius: 0 !important;
+  }
+  .dh {
+    background: #e8e8e8 !important;
+    border-bottom: 1px solid #333 !important;
+    padding: 6px 12px !important;
+  }
+  .dn { color: #000 !important; font-size: 14px !important; font-weight: bold !important; }
+  .dd { color: #444 !important; font-size: 11px !important; }
+  .shifts-row { grid-template-columns: 1fr 1fr !important; }
+  .shift-cell { border-left: 1px solid #ccc !important; padding: 8px !important; }
+  .shift-label { color: #444 !important; font-size: 10px !important; }
+  .stime { background: #ddd !important; color: #000 !important; }
+  .slot {
+    border: 1px solid #ccc !important;
+    background: #f9f9f9 !important;
+    border-radius: 0 !important;
+    padding: 5px 8px !important;
+    margin-bottom: 3px !important;
+    min-height: 28px !important;
+  }
+  .slot.filled { background: #eef9f6 !important; }
+  .sname { color: #000 !important; font-size: 12px !important; }
+  .sadd { color: #888 !important; }
+  .role-tag {
+    border: 1px solid #999 !important;
+    color: #333 !important;
+    background: #eee !important;
+    font-size: 9px !important;
+  }
+  .tag-miluim { background: #fff3d6 !important; color: #7a5200 !important; border-color: #c8a028 !important; }
+  .tag-sadir { background: #d6f0ff !important; color: #003d6b !important; border-color: #2882b8 !important; }
+  .tag-katzin { background: #f0d6ff !important; color: #4a0070 !important; border-color: #9040c0 !important; }
+  .rtag { background: #fff3d6 !important; color: #7a5200 !important; border-color: #c8a028 !important; }
 }
 </style>
 
@@ -648,7 +702,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
       <button class="icon-btn" id="back-btn" onclick="goBack()" title="חזור" style="display:none;">←</button>
       <button class="icon-btn" onclick="cycleFont()" title="גודל גופן" id="font-btn">א</button>
       <button class="icon-btn" onclick="toggleTheme()" title="מצב תצוגה" id="theme-btn">☀️</button>
-      <button class="icon-btn" onclick="logout()" title="יציאה">⏻</button>
+      <button class="icon-btn" onclick="logout()" title="יציאה" style="font-size:11px;font-weight:700;">יציאה</button>
     </div>
   </header>
   <div class="sbar"><span><span class="sdot"></span>מערכת פעילה</span><span id="sbar-sync" style="font-size:10px;color:var(--accent);">⟳ מתחבר לענן...</span><span id="sbar-week"></span></div>
@@ -1082,6 +1136,7 @@ function enterMgr(){
   updateMsgBadges();
   setTimeout(checkBroadcast,600);
   setTimeout(checkFirstTimeTour,1000);
+  startPolling();
 }
 function showSoldierSelect(){
   document.getElementById('login-screen').style.display='none';
@@ -1103,6 +1158,7 @@ function enterSol(p){
   document.getElementById('soldier-view').style.display='block';
   document.getElementById('mode-badge').textContent=p.name;
   document.getElementById('mode-badge').className='mode-badge soldier';
+  startPolling();
   S.week=0;
   renderSol();
   updateMsgBadges();
@@ -1122,6 +1178,7 @@ function goBack(){
   }
 }
 function logout(){
+  stopPolling();
   S.mode=null;S.user=null;S.week=0;
   document.getElementById('main-app').style.display='none';
   document.getElementById('soldier-view').style.display='none';
@@ -2794,6 +2851,45 @@ function requestNotifications(){
 function sendNotification(title, body){
   if(!_notifEnabled || Notification.permission !== 'granted') return;
   try { new Notification(title, {body:body, icon:'/Hamal/icon-192.png'}); } catch(e){}
+}
+
+// ── POLLING — check for new messages every 30s ───────────
+var _lastMsgCount = 0;
+var _pollingInterval = null;
+function startPolling(){
+  if(_pollingInterval) return;
+  _lastMsgCount = S.messages ? S.messages.length : 0;
+  _pollingInterval = setInterval(function(){
+    if(!window._fbLoad) return;
+    window._fbLoad().then(function(data){
+      if(!data || !data.messages) return;
+      const newCount = data.messages.length;
+      if(newCount > _lastMsgCount){
+        const newMsgs = data.messages.slice(_lastMsgCount);
+        newMsgs.forEach(function(m){
+          if(m.sender === 'soldier' && S.mode === 'manager'){
+            sendNotification('הודעה חדשה מ-' + m.from, m.text);
+            showToast('📩 הודעה חדשה מ-' + m.from, 'var(--accent)');
+          } else if(m.sender === 'manager' && S.mode === 'soldier' && S.user && m.to === S.user.name){
+            sendNotification('תגובה מהמפקד', m.text);
+            showToast('📩 תגובה חדשה מהמפקד', 'var(--accent)');
+          }
+        });
+        // Apply new data
+        if(data.people) S.people = data.people;
+        if(data.scheds) S.scheds = data.scheds;
+        if(data.messages) S.messages = data.messages;
+        localStorage.setItem(LS_KEY, JSON.stringify(data));
+        if(S.mode==='manager') renderMgr();
+        else if(S.mode==='soldier') renderSol();
+        updateMsgBadges();
+        _lastMsgCount = newCount;
+      }
+    }).catch(function(){});
+  }, 30000);
+}
+function stopPolling(){
+  if(_pollingInterval){ clearInterval(_pollingInterval); _pollingInterval=null; }
 }
 
 document.getElementById('slot-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
