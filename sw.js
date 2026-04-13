@@ -1,4 +1,4 @@
-const CACHE = 'hamal-v1';
+const CACHE = 'hamal-v1.0.3';
 const ASSETS = [
   '/Hamal/',
   '/Hamal/index.html',
@@ -21,7 +21,14 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.url.includes('firebase') || e.request.url.includes('googleapis')) return;
+  // Network first — always fetch fresh, fall back to cache offline
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
