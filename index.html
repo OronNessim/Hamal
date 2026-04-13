@@ -668,7 +668,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
   <div class="login-unit">חמ"ל מלכ"א</div>
   <div class="login-sub">שולחן מרכזי</div>
   <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:-1rem;margin-bottom:1rem;letter-spacing:0.5px;">פותח ע"י אורון נסים</div>
-  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.3</div>
+  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.0.4</div>
 <div class="login-card">
     <div class="sec-label">כניסת מפקד</div>
     <input class="login-input" id="pw-input" type="password" placeholder="🔐 סיסמת מפקד" />
@@ -838,8 +838,10 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
         </div>
 
         <div style="margin-top:8px;padding:12px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);text-align:center;">
-          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.0.3</div>
+          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.0.4</div>
           <div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:4px;">פותח ע"י אורון נסים</div>
+          <button onclick="forceUpdate()" style="margin-top:10px;padding:7px 16px;border-radius:8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:var(--accent);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">🔄 בדוק עדכונים</button>
+          <div id="update-msg" style="font-size:11px;min-height:14px;margin-top:6px;"></div>
         </div>
       </div>
     </div>
@@ -2772,10 +2774,24 @@ document.addEventListener('firebase-ready', function(){
 });
 loadState();
 
+// ── FORCE UPDATE ────────────────────────────────────────
+function forceUpdate(){
+  const msg = document.getElementById('update-msg');
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      regs.forEach(function(reg){ reg.unregister(); });
+      if(msg){ msg.style.color='var(--green)'; msg.textContent='✓ מתעדכן... האפליקציה תיטען מחדש'; }
+      setTimeout(function(){ window.location.reload(true); }, 1500);
+    });
+  } else {
+    window.location.reload(true);
+  }
+}
+
 // ── EXPORT / IMPORT ─────────────────────────────────────
 function exportData(){
   var data = {
-    version: '1.0.3',
+    version: '1.0.4',
     exported: new Date().toISOString(),
     people: S.people,
     scheds: S.scheds,
