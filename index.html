@@ -96,7 +96,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
   </div>
 
-  <div class="footer">HAMAL v1.0.4 — מערכת ניהול חמ"ל</div>
+  <div class="footer">HAMAL v1.1.0 — מערכת ניהול חמ"ל</div>
 </div>
 
 <script>
@@ -157,7 +157,7 @@ function selectUnit(id){
   document.getElementById('cell-unit-name').textContent = unit.name;
   const cl = document.getElementById('cell-list');
   cl.innerHTML = unit.cells.map(c => `
-    <div class="cell-item" onclick="openCell('${c.url}')">
+    <div class="cell-item" onclick="openCell('${c.url}','${id}','${c.id}')">
       <div class="cell-icon">${c.icon}</div>
       <div>
         <div class="cell-name">${c.name}</div>
@@ -183,7 +183,22 @@ function hideCells(){
   document.getElementById('search').disabled = false;
 }
 
-function openCell(url){
+function openCell(url, unitId, cellId){
+  const unit = UNITS.find(u => u.id === unitId);
+  const cell = unit ? unit.cells.find(c => c.id === cellId) : null;
+  if(unit && cell){
+    sessionStorage.setItem('hamal_unit', JSON.stringify({
+      id: unit.id,
+      name: unit.name,
+      logo: unit.logo,
+      logoClass: unit.logoClass
+    }));
+    sessionStorage.setItem('hamal_cell', JSON.stringify({
+      id: cell.id,
+      name: cell.name,
+      icon: cell.icon
+    }));
+  }
   window.location.href = url;
 }
 
