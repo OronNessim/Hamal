@@ -622,7 +622,8 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const DOC_REF = doc(db, 'chamal', 'state');
+    const _fbCellId = (function(){ try { return JSON.parse(sessionStorage.getItem('hamal_cell')||'{}').id || 'default'; } catch(e){ return 'default'; } })();
+    const DOC_REF = doc(db, 'chamal', _fbCellId);
 
     // Save to Firestore (called by saveState)
     window._fbSave = async function(data) {
@@ -1068,18 +1069,45 @@ const RC={miluim:'tag-miluim',sadir:'tag-sadir',katzin:'tag-katzin'};
 const DC={miluim:'var(--miluim)',sadir:'var(--sadir)',katzin:'var(--katzin)'};
 const PL={any:'ללא',morning:'בוקר',night:'לילה'};
 
-let S={
-  mode:null,user:null,week:0,pw:'וייי',
-  cfg:{miluimMax:3,slotsDay:2,slotsNight:2,officerDayOnly:true},
-  people:[
-    {id:1,name:'דוד כהן',role:'miluim',pref:'any',tzav8Periods:[]},
-    {id:2,name:'יוסי לוי',role:'miluim',pref:'morning',tzav8Periods:[]},
-    {id:3,name:'מיכל אברהם',role:'miluim',pref:'night',tzav8Periods:[]},
-    {id:4,name:'רון מזרחי',role:'sadir',pref:'any'},
-    {id:5,name:'נועה שפירא',role:'sadir',pref:'any'},
-    {id:6,name:'אורי ברק',role:'katzin',pref:'any'},
+// === ברירת מחדל לפי תא ===
+var _CELL_DEFAULTS = {
+  'malka': {
+    pw: 'מלכא123',
+    people: [
+      {id:1,name:'ממלא שם',role:'katzin',pref:'any'},
+      {id:2,name:'חייל 1',role:'sadir',pref:'any'},
+      {id:3,name:'חייל 2',role:'sadir',pref:'any'},
+      {id:4,name:'מילואימניק 1',role:'miluim',pref:'any',tzav8Periods:[]},
+    ],
+    nid: 5
+  },
+  'agam': {
+    pw: 'אגם123',
+    people: [
+      {id:1,name:'קצין אג"ם',role:'katzin',pref:'any'},
+      {id:2,name:'חוגר 1',role:'sadir',pref:'any'},
+      {id:3,name:'חוגר 2',role:'sadir',pref:'any'},
+      {id:4,name:'מילואים 1',role:'miluim',pref:'any',tzav8Periods:[]},
+    ],
+    nid: 5
+  }
+};
+
+var _cellDefaults = _CELL_DEFAULTS[_cellId] || {
+  pw: 'וייי',
+  people: [
+    {id:1,name:'חייל 1',role:'sadir',pref:'any'},
+    {id:2,name:'חייל 2',role:'sadir',pref:'any'},
+    {id:3,name:'קצין',role:'katzin',pref:'any'},
   ],
-  scheds:{},refreshes:[],prefs:{},messages:[],nid:7,nrid:1,slot:null
+  nid: 4
+};
+
+let S={
+  mode:null,user:null,week:0,pw:_cellDefaults.pw,
+  cfg:{miluimMax:3,slotsDay:2,slotsNight:2,officerDayOnly:true},
+  people: _cellDefaults.people,
+  scheds:{},refreshes:[],prefs:{},messages:[],nid:_cellDefaults.nid,nrid:1,slot:null
 };
 
 
@@ -2436,7 +2464,8 @@ function timeGreeting(){
 }
 
 // ── LOCALSTORAGE ──────────────────────────────────────────
-var LS_KEY = 'chamal_v1';
+var _cellId = (function(){ try { return JSON.parse(sessionStorage.getItem('hamal_cell')||'{}').id || 'default'; } catch(e){ return 'default'; } })();
+var LS_KEY = 'chamal_v1_' + _cellId;
 function saveState(){
   try {
     var toSave = {
