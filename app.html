@@ -2469,7 +2469,7 @@ var LS_KEY = 'chamal_v1_' + _cellId;
 function saveState(){
   try {
     var toSave = {
-      // pw intentionally excluded
+      pw: S.pw,
       people: S.people,
       scheds: S.scheds,
       refreshes: S.refreshes,
@@ -2482,6 +2482,8 @@ function saveState(){
       nextRid: S.nrid,
     };
     localStorage.setItem(LS_KEY, JSON.stringify(toSave));
+    // Save pw separately per cell
+    localStorage.setItem(LS_KEY + '_pw', S.pw);
     // Also save to Firestore if available
     if(window._fbSave) window._fbSave(JSON.parse(JSON.stringify(toSave)));
   } catch(e){ console.warn('save failed', e); }
@@ -2498,8 +2500,10 @@ function loadState(){
     if(saved.messages)  S.messages  = saved.messages;
     if(saved.broadcast) S.broadcast = saved.broadcast;
     if(saved.cfg)       S.cfg       = Object.assign(S.cfg, saved.cfg);
-    // never restore pw from storage
-    S.pw = S.pw;
+    // Restore pw from cell-specific key
+    var savedPw = localStorage.getItem(LS_KEY + '_pw');
+    if(savedPw) S.pw = savedPw;
+    else if(saved.pw) S.pw = saved.pw;
     if(saved.schedule)  S.schedule  = saved.schedule;
     if(saved.nextId)    S.nid       = saved.nextId;
     if(saved.nextRid)   S.nrid      = saved.nextRid;
@@ -2802,6 +2806,7 @@ function assignPerson(pid){
 
 function applyState(saved){
   if(!saved) return;
+  if(saved.pw)        { S.pw = saved.pw; localStorage.setItem(LS_KEY + '_pw', saved.pw); }
   if(saved.people)    S.people    = saved.people;
   if(saved.scheds)    S.scheds    = saved.scheds;
   if(saved.refreshes) S.refreshes = saved.refreshes;
@@ -2819,12 +2824,14 @@ function initFirebase(){
     if(data){
       applyState(data);
       localStorage.setItem(LS_KEY, JSON.stringify(data));
+      if(data.pw) localStorage.setItem(LS_KEY + '_pw', data.pw);
       if(S.mode==='manager') renderMgr();
       else if(S.mode==='soldier') renderSol();
     }
     if(window._fbListen) window._fbListen(function(liveData){
       applyState(liveData);
       localStorage.setItem(LS_KEY, JSON.stringify(liveData));
+      if(liveData.pw) localStorage.setItem(LS_KEY + '_pw', liveData.pw);
       if(S.mode==='manager') renderMgr();
       else if(S.mode==='soldier') renderSol();
     });
