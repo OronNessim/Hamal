@@ -838,7 +838,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
         </div>
 
         <div style="margin-top:8px;padding:12px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);text-align:center;">
-          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.0.4</div>
+          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.1.0</div>
           <div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:4px;">פותח ע"י אורון נסים</div>
           <button onclick="forceUpdate()" style="margin-top:10px;padding:7px 16px;border-radius:8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:var(--accent);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">🔄 בדוק עדכונים</button>
           <div id="update-msg" style="font-size:11px;min-height:14px;margin-top:6px;"></div>
@@ -876,16 +876,30 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
             <input type="number" class="fi" id="miluim-max" value="3" min="1" max="14" style="width:55px;text-align:center;" onchange="saveSett('miluimMax',this.value)"/>
           </div>
           <div class="sett-item">
-            <div class="sit-info"><div class="sit-title">אנשים — משמרת יום</div><div class="sit-desc">מספר משבצות במשמרת 08:00–20:00</div></div>
+            <div class="sit-info"><div class="sit-title">אנשים — משמרת יום</div><div class="sit-desc" id="desc-slots-day">מספר משבצות במשמרת יום</div></div>
             <input type="number" class="fi" id="slots-day" value="2" min="1" max="6" style="width:55px;text-align:center;" onchange="saveSett('slotsDagy',this.value)"/>
           </div>
           <div class="sett-item">
-            <div class="sit-info"><div class="sit-title">אנשים — משמרת לילה</div><div class="sit-desc">מספר משבצות במשמרת 20:00–08:00</div></div>
+            <div class="sit-info"><div class="sit-title">אנשים — משמרת לילה</div><div class="sit-desc" id="desc-slots-night">מספר משבצות במשמרת לילה</div></div>
             <input type="number" class="fi" id="slots-night" value="2" min="1" max="6" style="width:55px;text-align:center;" onchange="saveSett('slotsNight',this.value)"/>
           </div>
           <div class="sett-item">
             <div class="sit-info"><div class="sit-title">איש קבע רק ביום</div><div class="sit-desc">מונע שיבוץ איש קבע למשמרת לילה</div></div>
             <label class="toggle"><input type="checkbox" id="off-day" checked onchange="saveSett('officerDayOnly',this.checked)"><span class="tslider"></span></label>
+          </div>
+          <div class="sett-item">
+            <div class="sit-info"><div class="sit-title">תחילת משמרת יום</div><div class="sit-desc">השעה שבה מתחילה משמרת הבוקר</div></div>
+            <select class="fi" id="shift-day-start" style="width:75px;text-align:center;" onchange="saveSett('shiftDayStart',parseInt(this.value))">
+              <option value="6">06:00</option><option value="7">07:00</option><option value="8" selected>08:00</option>
+              <option value="9">09:00</option><option value="10">10:00</option><option value="11">11:00</option><option value="12">12:00</option>
+            </select>
+          </div>
+          <div class="sett-item">
+            <div class="sit-info"><div class="sit-title">תחילת משמרת לילה</div><div class="sit-desc">השעה שבה מתחילה משמרת הלילה</div></div>
+            <select class="fi" id="shift-night-start" style="width:75px;text-align:center;" onchange="saveSett('shiftNightStart',parseInt(this.value))">
+              <option value="18">18:00</option><option value="19">19:00</option><option value="20" selected>20:00</option>
+              <option value="21">21:00</option><option value="22">22:00</option><option value="23">23:00</option>
+            </select>
           </div>
         </div>
 
@@ -1063,7 +1077,15 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 
 <script>
 const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-const SHIFTS=[{name:'משמרת בוקר',time:'08:00–20:00',isDay:true},{name:'משמרת לילה',time:'20:00–08:00',isDay:false}];
+function getShifts(){
+  var ds = S.cfg.shiftDayStart || 8;
+  var ns = S.cfg.shiftNightStart || 20;
+  var dsStr = String(ds).padStart(2,'0')+':00', nsStr = String(ns).padStart(2,'0')+':00';
+  return [
+    {name:'משמרת בוקר', time:dsStr+'–'+nsStr, isDay:true,  start:ds, end:ns},
+    {name:'משמרת לילה', time:nsStr+'–'+dsStr, isDay:false, start:ns, end:ds}
+  ];
+}
 const RL={miluim:'מילואים',sadir:'סדיר',katzin:'איש קבע'};
 const RC={miluim:'tag-miluim',sadir:'tag-sadir',katzin:'tag-katzin'};
 const DC={miluim:'var(--miluim)',sadir:'var(--sadir)',katzin:'var(--katzin)'};
@@ -1105,10 +1127,11 @@ var _cellDefaults = _CELL_DEFAULTS[_cellId] || {
 
 let S={
   mode:null,user:null,week:0,pw:_cellDefaults.pw,
-  cfg:{miluimMax:3,slotsDay:2,slotsNight:2,officerDayOnly:true},
+  cfg:{miluimMax:3,slotsDay:2,slotsNight:2,officerDayOnly:true,shiftDayStart:8,shiftNightStart:20},
   people: _cellDefaults.people,
   scheds:{},refreshes:[],prefs:{},messages:[],nid:_cellDefaults.nid,nrid:1,slot:null
 };
+var SHIFTS = getShifts();
 
 
 function weekNotStarted(){
@@ -1279,6 +1302,8 @@ function saveSett(k,v){
   if(k==='slotsDagy'){S.cfg.slotsDay=parseInt(v)||2;if(S.mode==='manager')renderMgr();}
   if(k==='slotsNight'){S.cfg.slotsNight=parseInt(v)||2;if(S.mode==='manager')renderMgr();}
   if(k==='officerDayOnly')S.cfg.officerDayOnly=v;
+  if(k==='shiftDayStart'){S.cfg.shiftDayStart=v;if(S.mode==='manager')renderMgr();}
+  if(k==='shiftNightStart'){S.cfg.shiftNightStart=v;if(S.mode==='manager')renderMgr();}
   saveState();
 }
 function changePw(){
@@ -1295,6 +1320,8 @@ function renderSettings(){
   document.getElementById('slots-day').value=S.cfg.slotsDay;
   document.getElementById('slots-night').value=S.cfg.slotsNight;
   document.getElementById('off-day').checked=S.cfg.officerDayOnly;
+  document.getElementById('shift-day-start').value=S.cfg.shiftDayStart||8;
+  document.getElementById('shift-night-start').value=S.cfg.shiftNightStart||20;
   renderRfList();
 }
 function addRefresh(){
@@ -1318,7 +1345,7 @@ function renderRfList(){
 }
 
 // MANAGER RENDER
-function renderMgr(){
+function renderMgr(){ SHIFTS = getShifts();
   document.getElementById('week-label').textContent='שבוע '+wl();
   document.getElementById('sbar-week').textContent=wl();
   const dates=getDates();renderRfBanner(dates);renderStats(dates);renderGrid(dates);
@@ -1839,15 +1866,16 @@ function renderSol(){
     const _sameDay = _shiftDay.getTime() === _today.getTime();
     const _nextDay = (()=>{ const nx=new Date(_shiftDay); nx.setDate(nx.getDate()+1); return nx.getTime()===_today.getTime(); })();
     let isCurrent = false, remainStr = '';
-    if(si===0){ // בוקר: 08:00–20:00, same calendar day
-      isCurrent = _sameDay && _nowH>=8 && _nowH<20;
-      if(isCurrent){ const mins=(20-_nowH)*60-_nowM; remainStr=Math.floor(mins/60)+'ש׳ '+(mins%60)+'ד׳'; }
-    } else { // לילה: 20:00–08:00, starts _shiftDay evening, ends next morning
-      const inEvening = _sameDay && _nowH>=20;
-      const inMorning  = _nextDay  && _nowH<8;
+    var _ds = S.cfg.shiftDayStart||8, _ns = S.cfg.shiftNightStart||20;
+    if(si===0){ // בוקר
+      isCurrent = _sameDay && _nowH>=_ds && _nowH<_ns;
+      if(isCurrent){ const mins=(_ns-_nowH)*60-_nowM; remainStr=Math.floor(mins/60)+'ש׳ '+(mins%60)+'ד׳'; }
+    } else { // לילה
+      const inEvening = _sameDay && _nowH>=_ns;
+      const inMorning  = _nextDay  && _nowH<_ds;
       isCurrent = inEvening || inMorning;
       if(isCurrent){
-        const mins = inEvening ? ((24-_nowH)*60-_nowM + 8*60) : ((8-_nowH)*60-_nowM);
+        const mins = inEvening ? ((24-_nowH)*60-_nowM + _ds*60) : ((_ds-_nowH)*60-_nowM);
         remainStr = Math.floor(mins/60)+'ש׳ '+(mins%60)+'ד׳';
       }
     }
