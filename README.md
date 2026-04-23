@@ -4,7 +4,7 @@
 **פותח ע"י:** אורון נסים  
 **יחידה:** חטיבת גולני
 
-🔗 **[לאתר החי](https://oronnessim.github.io/Hamal/app.html)**
+🔗 **[לאתר החי](https://oronnessim.github.io/Hamal/)**
 
 ---
 
