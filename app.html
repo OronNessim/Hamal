@@ -1151,6 +1151,8 @@ function cyclePref(d,s){
   const next=cur===null?'prefer':cur==='prefer'?'avoid':null;
   setPref(wk,p.id,d,s,next);
   renderSolPrefs();
+  saveState();  // ← זה כל התיקון
+
 }
 
 function getSched(){
