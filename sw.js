@@ -1,7 +1,8 @@
-const CACHE = 'hamal-v1.0.3';
+const CACHE = 'hamal-v1.1.2';
 const ASSETS = [
   '/Hamal/',
   '/Hamal/index.html',
+  '/Hamal/app.html',
   '/Hamal/manifest.json',
   '/Hamal/icon-192.png',
   '/Hamal/icon-512.png'
