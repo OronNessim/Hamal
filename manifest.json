@@ -1,7 +1,7 @@
 {
-  "name": "חמ\"ל מלכ\"א — שולחן מרכזי",
-  "short_name": "חמ\"ל מלכ\"א",
-  "description": "מערכת ניהול משמרות חמ\"ל מלכ\"א",
+  "name": "מל\"ח — משמרות לאנשי חמ\"ל",
+  "short_name": "מל\"ח",
+  "description": "מערכת ניהול משמרות לאנשי חמ\"ל",
   "start_url": "/Hamal/",
   "scope": "/Hamal/",
   "display": "standalone",
