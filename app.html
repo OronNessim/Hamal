@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="חמ&quot;ל מלכ&quot;א">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{--bg:#07090f;--surface:#0e1420;--surface2:#151e30;--surface3:#1c2840;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--accent:#00d4aa;--accent2:#00a884;--accent-glow:rgba(0,212,170,0.15);--gold:#f5a623;--gold-glow:rgba(245,166,35,0.15);--red:#ff4757;--green:#2ecc71;--yellow:#f39c12;--text:#e8edf5;--muted:#4a6080;--muted2:#6b8aaa;--miluim:#f5a623;--sadir:#4fc3f7;--katzin:#ce93d8;--scan-line:rgba(0,212,170,0.025);}
+:root{--bg:#07090f;--surface:#0e1420;--surface2:#151e30;--surface3:#1c2840;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--accent:#00d4aa;--accent2:#00a884;--accent-glow:rgba(0,212,170,0.15);--gold:#f5a623;--gold-glow:rgba(245,166,35,0.15);--red:#ff4757;--green:#2ecc71;--yellow:#f39c12;--text:#e8edf5;--muted:#4a6080;--muted2:#6b8aaa;--miluim:#f5a623;--sadir:#4fc3f7;--katzin:#ce93d8;--katzin-s:#80cbc4;--scan-line:rgba(0,212,170,0.025);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;overflow-x:hidden;}
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,var(--scan-line) 3px,var(--scan-line) 4px);pointer-events:none;z-index:9999;animation:scanMove 10s linear infinite;}
@@ -126,6 +126,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .tag-miluim{background:rgba(245,166,35,.13);color:var(--miluim);border:1px solid rgba(245,166,35,.2);}
 .tag-sadir{background:rgba(79,195,247,.1);color:var(--sadir);border:1px solid rgba(79,195,247,.18);}
 .tag-katzin{background:rgba(206,147,216,.1);color:var(--katzin);border:1px solid rgba(206,147,216,.18);}
+.tag-katzin-s{background:rgba(128,203,196,.12);color:var(--katzin-s);border:1px solid rgba(128,203,196,.25);}
 
 .tabs{display:flex;border-bottom:1px solid var(--border);padding:0 18px;background:var(--surface);}
 .tab{padding:10px 14px;font-size:12px;font-weight:600;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s cubic-bezier(.22,.68,0,1.2);display:flex;align-items:center;gap:5px;position:relative;overflow:hidden;}
@@ -261,7 +262,7 @@ select.fi option{background:var(--surface2);}
   --gold:#c47d00;--gold-glow:rgba(196,125,0,0.1);
   --red:#dc2626;--green:#16a34a;--yellow:#ca8a04;
   --text:#0f172a;--muted:#94a3b8;--muted2:#475569;
-  --miluim:#c47d00;--sadir:#0369a1;--katzin:#7c3aed;
+  --miluim:#c47d00;--sadir:#0369a1;--katzin:#7c3aed;--katzin-s:#00796b;
   --scan-line:rgba(0,0,0,0);
 }
 [data-theme="light"] body::before{background-image:linear-gradient(rgba(0,143,122,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,143,122,0.04) 1px,transparent 1px);}
@@ -602,6 +603,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
   .tag-miluim { background: #fff3d6 !important; color: #7a5200 !important; border-color: #c8a028 !important; }
   .tag-sadir { background: #d6f0ff !important; color: #003d6b !important; border-color: #2882b8 !important; }
   .tag-katzin { background: #f0d6ff !important; color: #4a0070 !important; border-color: #9040c0 !important; }
+  .tag-katzin-s { background: #e0f2f1 !important; color: #00695c !important; border-color: #4db6ac !important; }
   .rtag { background: #fff3d6 !important; color: #7a5200 !important; border-color: #c8a028 !important; }
 }
 </style>
@@ -643,7 +645,10 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 
     // Listen for real-time updates from Firestore
     window._fbListen = function(callback) {
-      return onSnapshot(DOC_REF, (snap) => {
+      return onSnapshot(DOC_REF, { includeMetadataChanges: true }, (snap) => {
+        // Skip callbacks triggered by our own local writes (hasPendingWrites=true)
+        // Only apply data confirmed by the server, to avoid overwriting recent local changes
+        if (snap.metadata.hasPendingWrites) return;
         if (snap.exists() && snap.data().payload) callback(JSON.parse(snap.data().payload));
       }, (e) => console.warn('Firebase listen error:', e));
     };
@@ -668,7 +673,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
   <div class="login-title" id="login-unit-name">חטיבת גולני</div>
   <div class="login-unit" id="login-cell-name">חמ"ל מלכ"א</div>
   <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:-1rem;margin-bottom:1rem;letter-spacing:0.5px;">פותח ע"י אורון נסים</div>
-  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.1.0</div>
+  <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-top:-0.8rem;margin-bottom:0.5rem;">v1.1.2</div>
 <div class="login-card">
     <div class="sec-label">כניסת מפקד</div>
     <input class="login-input" id="pw-input" type="password" placeholder="🔐 סיסמת מפקד" />
@@ -747,11 +752,12 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
             <option value="miluim">מילואים</option>
             <option value="sadir">סדיר</option>
             <option value="katzin">איש קבע</option>
+            <option value="katzin_s">קבע-בלימודים</option>
           </select>
           <button class="badd" onclick="addPerson()">+ הוסף</button>
         </div>
         <div class="form-row" id="pref-row">
-          <span style="font-size:12px;color:var(--muted2);align-self:center;white-space:nowrap;">עדיפות מילואים:</span>
+          <span style="font-size:12px;color:var(--muted2);align-self:center;white-space:nowrap;">עדיפות משמרת:</span>
           <select class="fi" id="new-pref">
             <option value="any">ללא</option>
             <option value="morning">בוקר</option>
@@ -838,7 +844,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
         </div>
 
         <div style="margin-top:8px;padding:12px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);text-align:center;">
-          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.1.0</div>
+          <div style="font-size:11px;color:var(--muted2);">מערכת ניהול משמרות חמ"ל | גרסה 1.1.2</div>
           <div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:4px;">פותח ע"י אורון נסים</div>
           <button onclick="forceUpdate()" style="margin-top:10px;padding:7px 16px;border-radius:8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:var(--accent);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">🔄 בדוק עדכונים</button>
           <div id="update-msg" style="font-size:11px;min-height:14px;margin-top:6px;"></div>
@@ -874,6 +880,10 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
           <div class="sett-item">
             <div class="sit-info"><div class="sit-title">מגבלת מילואים לשבוע</div><div class="sit-desc">מספר משמרות מקסימלי למילואימניק</div></div>
             <input type="number" class="fi" id="miluim-max" value="3" min="1" max="14" style="width:55px;text-align:center;" onchange="saveSett('miluimMax',this.value)"/>
+          </div>
+          <div class="sett-item">
+            <div class="sit-info"><div class="sit-title">מגבלת קבע-בלימודים לשבוע</div><div class="sit-desc">מספר משמרות מקסימלי לאיש קבע-בלימודים</div></div>
+            <input type="number" class="fi" id="katzin-s-max" value="1" min="1" max="14" style="width:55px;text-align:center;" onchange="saveSett('katzinSMax',this.value)"/>
           </div>
           <div class="sett-item">
             <div class="sit-info"><div class="sit-title">אנשים — משמרת יום</div><div class="sit-desc" id="desc-slots-day">מספר משבצות במשמרת יום</div></div>
@@ -1086,9 +1096,9 @@ function getShifts(){
     {name:'משמרת לילה', time:nsStr+'–'+dsStr, isDay:false, start:ns, end:ds}
   ];
 }
-const RL={miluim:'מילואים',sadir:'סדיר',katzin:'איש קבע'};
-const RC={miluim:'tag-miluim',sadir:'tag-sadir',katzin:'tag-katzin'};
-const DC={miluim:'var(--miluim)',sadir:'var(--sadir)',katzin:'var(--katzin)'};
+const RL={miluim:'מילואים',sadir:'סדיר',katzin:'איש קבע',katzin_s:'קבע-בלימודים'};
+const RC={miluim:'tag-miluim',sadir:'tag-sadir',katzin:'tag-katzin',katzin_s:'tag-katzin-s'};
+const DC={miluim:'var(--miluim)',sadir:'var(--sadir)',katzin:'var(--katzin)',katzin_s:'var(--katzin-s)'};
 const PL={any:'ללא',morning:'בוקר',night:'לילה'};
 
 // === ברירת מחדל לפי תא ===
@@ -1112,6 +1122,16 @@ var _CELL_DEFAULTS = {
       {id:4,name:'מילואים 1',role:'miluim',pref:'any',tzav8Periods:[]},
     ],
     nid: 5
+  },
+  'yiftach_malka': {
+    pw: 'יפתח123',
+    people: [
+      {id:1,name:'קצין מלכ"א',role:'katzin',pref:'any'},
+      {id:2,name:'לוחם 1',role:'miluim',pref:'any',tzav8Periods:[]},
+      {id:3,name:'לוחם 2',role:'miluim',pref:'any',tzav8Periods:[]},
+      {id:4,name:'לוחם 3',role:'miluim',pref:'any',tzav8Periods:[]},
+    ],
+    nid: 5
   }
 };
 
@@ -1127,7 +1147,7 @@ var _cellDefaults = _CELL_DEFAULTS[_cellId] || {
 
 let S={
   mode:null,user:null,week:0,pw:_cellDefaults.pw,
-  cfg:{miluimMax:3,slotsDay:2,slotsNight:2,officerDayOnly:true,shiftDayStart:8,shiftNightStart:20},
+  cfg:{miluimMax:3,katzinSMax:1,slotsDay:2,slotsNight:2,officerDayOnly:true,shiftDayStart:8,shiftNightStart:20},
   people: _cellDefaults.people,
   scheds:{},refreshes:[],prefs:{},messages:[],nid:_cellDefaults.nid,nrid:1,slot:null
 };
@@ -1151,6 +1171,8 @@ function cyclePref(d,s){
   const next=cur===null?'prefer':cur==='prefer'?'avoid':null;
   setPref(wk,p.id,d,s,next);
   renderSolPrefs();
+  saveState();  // ← זה כל התיקון
+
 }
 
 function getSched(){
@@ -1301,6 +1323,7 @@ function switchTab(t, isBack){
 // SETTINGS
 function saveSett(k,v){
   if(k==='miluimMax')S.cfg.miluimMax=parseInt(v)||3;
+  if(k==='katzinSMax')S.cfg.katzinSMax=parseInt(v)||1;
   if(k==='slotsDagy'){S.cfg.slotsDay=parseInt(v)||2;if(S.mode==='manager')renderMgr();}
   if(k==='slotsNight'){S.cfg.slotsNight=parseInt(v)||2;if(S.mode==='manager')renderMgr();}
   if(k==='officerDayOnly')S.cfg.officerDayOnly=v;
@@ -1319,6 +1342,7 @@ function changePw(){
 }
 function renderSettings(){
   document.getElementById('miluim-max').value=S.cfg.miluimMax;
+  document.getElementById('katzin-s-max').value=S.cfg.katzinSMax||1;
   document.getElementById('slots-day').value=S.cfg.slotsDay;
   document.getElementById('slots-night').value=S.cfg.slotsNight;
   document.getElementById('off-day').checked=S.cfg.officerDayOnly;
@@ -1334,7 +1358,7 @@ function addRefresh(){
   document.getElementById('rf-start').value='';document.getElementById('rf-end').value='';document.getElementById('rf-name').value='';
   renderRfList();saveState();
 }
-function delRefresh(id){S.refreshes=S.refreshes.filter(r=>r.id!==id);renderRfList();}
+function delRefresh(id){S.refreshes=S.refreshes.filter(r=>r.id!==id);renderRfList();saveState();}
 function renderRfList(){
   const l=document.getElementById('rf-list');l.innerHTML='';
   if(!S.refreshes.length){l.innerHTML='<div style="font-size:12px;color:var(--muted);padding:0 0 8px;">אין רענונים</div>';return;}
@@ -1438,7 +1462,7 @@ function renderPeople(){
     const nameLine=document.createElement('div');
     nameLine.style.cssText='font-size:13px;font-weight:600;';
     nameLine.textContent=p.name;
-    if(p.role==='miluim'&&p.pref!=='any'){
+    if((p.role==='miluim'||p.role==='katzin_s')&&p.pref!=='any'){
       const badge=document.createElement('span');
       badge.className='pbadge';
       badge.textContent=PL[p.pref];
@@ -1574,11 +1598,11 @@ function closeTzav8(id){
   if(active)active.close=today;
   renderPeople();saveState();
 }
-function togglePref(){document.getElementById('pref-row').style.display=document.getElementById('new-role').value==='miluim'?'flex':'none';}
+function togglePref(){const r=document.getElementById('new-role').value;document.getElementById('pref-row').style.display=(r==='miluim'||r==='katzin_s')?'flex':'none';}
 function addPerson(){
   const name=document.getElementById('new-name').value.trim();
   const role=document.getElementById('new-role').value;
-  const pref=role==='miluim'?document.getElementById('new-pref').value:'any';
+  const pref=(role==='miluim'||role==='katzin_s')?document.getElementById('new-pref').value:'any';
   if(!name)return;
   S.people.push({id:S.nid++,name,role,pref,tzav8Periods:role==='miluim'?[]:undefined});
   document.getElementById('new-name').value='';
@@ -1591,6 +1615,7 @@ function delPerson(id){
   Object.values(S.scheds).forEach(w=>w.forEach(d=>d.forEach(sh=>sh.forEach((pid,i,a)=>{if(pid===id)a[i]=null;}))));
   renderPeople();
   renderStats(getDates());
+  saveState();
 }
 
 // SLOT MODAL
@@ -1605,17 +1630,18 @@ function renderML(q){
   const sc=getSched();const{di,si,slot}=S.slot;
   const sps=si===0?S.cfg.slotsDay:S.cfg.slotsNight;
   const others=sc[di][si].filter((_,i)=>i!==slot&&sc[di][si][i]!==null&&i<sps);
-  const mc={};S.people.filter(p=>p.role==='miluim').forEach(p=>mc[p.id]=0);
+  const mc={};S.people.filter(p=>p.role==='miluim'||p.role==='katzin_s').forEach(p=>mc[p.id]=0);
   sc.forEach((d,dd)=>d.forEach((sh,ss)=>sh.forEach((pid,sl)=>{
     if(!(dd===di&&ss===si&&sl===slot)&&pid&&mc[pid]!==undefined)mc[pid]++;
   })));
   const l=document.getElementById('m-plist');l.innerHTML='';
+  const _kSMax=S.cfg.katzinSMax||1;
   S.people.filter(p=>!q||p.name.includes(q)).forEach(p=>{
-    const same=others.includes(p.id),over=p.role==='miluim'&&mc[p.id]>=S.cfg.miluimMax,sel=sc[di][si][slot]===p.id;
+    const same=others.includes(p.id),over=(p.role==='miluim'&&mc[p.id]>=S.cfg.miluimMax)||(p.role==='katzin_s'&&mc[p.id]>=_kSMax),sel=sc[di][si][slot]===p.id;
     const el=document.createElement('div');
     el.className='pitem'+(same?' disabled':'')+(sel?' selected':'');
     el.innerHTML=`<div class="pinfo"><div class="pname">${p.name}${sel?' ✓':''}</div>
-      <div class="pmeta">${RL[p.role]}${over?' · עבר '+S.cfg.miluimMax:''}${p.pref!=='any'?' · '+PL[p.pref]:''}</div></div>
+      <div class="pmeta">${RL[p.role]}${over?' · עבר '+(p.role==='katzin_s'?_kSMax:S.cfg.miluimMax):''}${p.pref!=='any'?' · '+PL[p.pref]:''}</div></div>
       <span class="role-tag ${RC[p.role]}">${RL[p.role]}</span>`;
     if(!same)el.onclick=()=>assignP(p.id);
     l.appendChild(el);
@@ -1629,9 +1655,9 @@ function closeAlert(){document.getElementById('alert-modal').classList.remove('o
 
 // AUTO-FILL
 function autoFill(override){
-  const nm=S.people.filter(p=>p.role!=='miluim'),mil=S.people.filter(p=>p.role==='miluim');
+  const nm=S.people.filter(p=>p.role!=='miluim'&&p.role!=='katzin_s'),mil=S.people.filter(p=>p.role==='miluim'||p.role==='katzin_s');
   if(nm.length===0&&mil.length>0){
-    document.getElementById('alert-msg').textContent='אין סדיר/קצינים. המילואימניקים יעברו את המגבלה. להמשיך?';
+    document.getElementById('alert-msg').textContent='אין סדיר/קצינים. המילואים/קבע-בלימודים יעברו את המגבלה. להמשיך?';
     document.getElementById('alert-yes').onclick=()=>{closeAlert();doFill(override,true);};
     document.getElementById('alert-modal').classList.add('open');return;
   }
@@ -1665,7 +1691,7 @@ function doFill(override,milOnly){
   function asgOne(p,wd){
     const wk=S.week;
     let sl=emSlots().filter(x=>!sc[x.d][x.s].includes(p.id));
-    // sort: pref score, then non-consecutive preferred, then day pref, then count
+    // sort: weekly prefer/avoid first, then non-consecutive, then general day/night pref as tiebreaker
     sl.sort((a,b)=>{
       const pa=getPref(wk,p.id,a.d,a.s)||'neutral';
       const pb=getPref(wk,p.id,b.d,b.s)||'neutral';
@@ -1675,15 +1701,14 @@ function doFill(override,milOnly){
       const ca=isConsec(sc,p.id,a.d,a.s)?1:0;
       const cb=isConsec(sc,p.id,b.d,b.s)?1:0;
       if(ca!==cb) return ca-cb;
-      return (cn[p.id]||0)-(cn[p.id]||0);
+      // general shift preference (morning/night) as final tiebreaker only
+      if(wd!=null){
+        const da=a.isDay===wd?0:1;
+        const db=b.isDay===wd?0:1;
+        if(da!==db) return da-db;
+      }
+      return 0;
     });
-    if(wd!=null){
-      // within same consec/pref group, prefer day type
-      const nonConsec=sl.filter(x=>!isConsec(sc,p.id,x.d,x.s));
-      const consec=sl.filter(x=>isConsec(sc,p.id,x.d,x.s));
-      const sortByDay=arr=>{ const pref=arr.filter(x=>x.isDay===wd); const other=arr.filter(x=>x.isDay!==wd); return [...pref,...other]; };
-      sl=[...sortByDay(nonConsec),...sortByDay(consec)];
-    }
     let ch=sl[0];if(!ch)return false;
     sc[ch.d][ch.s][ch.sl]=p.id;cn[p.id]=(cn[p.id]||0)+1;return true;
   }
@@ -1702,15 +1727,21 @@ function doFill(override,milOnly){
   const excl = window._fillExcludedGlobal || new Set();
   const ovrd = window._fillOverridesGlobal || {};
   const max=S.cfg.miluimMax;
+  const katzS=S.people.filter(p=>p.role==='katzin_s');
   // Filter excluded
   const milFiltered = mil.filter(p=>!excl.has(p.id));
   const sadirFiltered = sadir.filter(p=>!excl.has(p.id));
   const katzFiltered = katz.filter(p=>!excl.has(p.id));
+  const katzSFiltered = katzS.filter(p=>!excl.has(p.id));
   const mq=milFiltered.filter(p=>{
     const myMax = ovrd[p.id]!==undefined ? ovrd[p.id] : max;
     return (cn[p.id]||0)<myMax;
   });shuf(mq);
   mq.forEach(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:max;const nd=myMax-(cn[p.id]||0),wd=p.pref==='morning'?true:p.pref==='night'?false:null;for(let i=0;i<nd;i++)asgOne(p,wd);});
+  // assign katzin_s (limited shifts, default max=1, any shift day/night)
+  const kSMax=S.cfg.katzinSMax||1;
+  const sq=katzSFiltered.filter(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:kSMax;return (cn[p.id]||0)<myMax;});shuf(sq);
+  sq.forEach(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:kSMax;const nd=myMax-(cn[p.id]||0),wd=p.pref==='morning'?true:p.pref==='night'?false:null;for(let i=0;i<nd;i++)asgOne(p,wd);});
   if(milOnly){renderMgr();saveState();return;}
   function gl(pool,ex=[],di=-1,si=-1){
     const wk=S.week;
@@ -1739,19 +1770,21 @@ function doFill(override,milOnly){
         const em=[...Array(sps).keys()].filter(sl=>sc[d][s][sl]===null);
         if(!em.length)break;
         const ex=sc[d][s].filter(x=>x!==null);
+        // when officerDayOnly is on, katzin is excluded from night shifts
+        const nightKatz=(S.cfg.officerDayOnly&&!isDay)?[]:katzFiltered;
         if(em.length>=2){
           if(isDay&&S.cfg.officerDayOnly&&katzFiltered.length>0){
             const k=gl(katzFiltered,ex,d,s),sd=gl(sadirFiltered,ex.concat(k?[k.id]:[]),d,s);
             if(k&&sd){sc[d][s][em[0]]=k.id;cn[k.id]=(cn[k.id]||0)+1;sc[d][s][em[1]]=sd.id;cn[sd.id]=(cn[sd.id]||0)+1;continue;}
           }
-          const p1=gl([...sadirFiltered,...katzFiltered],ex,d,s),p2=gl([...sadirFiltered,...katzFiltered],ex.concat(p1?[p1.id]:[]),d,s);
+          const p1=gl([...sadirFiltered,...nightKatz],ex,d,s),p2=gl([...sadirFiltered,...nightKatz],ex.concat(p1?[p1.id]:[]),d,s);
           if(p1){sc[d][s][em[0]]=p1.id;cn[p1.id]=(cn[p1.id]||0)+1;}
           if(p2){sc[d][s][em[1]]=p2.id;cn[p2.id]=(cn[p2.id]||0)+1;}
         } else {
           const sl=em[0],ex0=ex[0]?byId(ex[0]):null;let c=null;
           if(isDay&&ex0&&ex0.role==='katzin')c=gl(sadirFiltered,ex,d,s);
           else if(isDay&&S.cfg.officerDayOnly&&katzFiltered.length>0)c=gl(katzFiltered,ex,d,s)||gl(sadirFiltered,ex,d,s);
-          else c=gl(sadirFiltered,ex,d,s)||gl(katzFiltered,ex,d,s);
+          else c=gl([...sadirFiltered,...nightKatz],ex,d,s);
           if(c){sc[d][s][sl]=c.id;cn[c.id]=(cn[c.id]||0)+1;}
         }
         break;
@@ -1798,8 +1831,10 @@ function renderSol(){
     if(sh.includes(p.id)){const partner=sh.find(pid=>pid!==p.id&&pid!==null);mine.push({di,si,date:dates[di],partner:partner?byId(partner):null});}
   }));
   const cnt=mine.length;
+  const _isLim=p.role==='miluim'||p.role==='katzin_s';
+  const _limMax=p.role==='miluim'?S.cfg.miluimMax:(S.cfg.katzinSMax||1);
   document.getElementById('sol-stats').innerHTML=`<div class="sc"><div class="slabel">משמרות השבוע</div>
-    <div class="sval ${p.role==='miluim'?(cnt<=S.cfg.miluimMax?'ok':'bad'):'ok'}">${cnt}${p.role==='miluim'?'/'+S.cfg.miluimMax:''}</div></div>`;
+    <div class="sval ${_isLim?(cnt<=_limMax?'ok':'bad'):'ok'}">${cnt}${_isLim?'/'+_limMax:''}</div></div>`;
   const l=document.getElementById('my-shifts');l.innerHTML='';
   // tzav8 card for miluim — periods based
   if(p.role==='miluim'){
@@ -1895,6 +1930,7 @@ function renderSol(){
 
 function cancelAllTzav8(){
   S.people.forEach(p=>{ if(p.role==='miluim') p.tzav8Periods=[]; });
+  saveState();
   if(document.getElementById('tab-people').classList.contains('active')) renderPeople();
   const msg=document.createElement('div');
   msg.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--green);color:var(--green);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;animation:fadeIn .3s ease;';
@@ -2137,9 +2173,11 @@ function renderMgrMessages(){
 }
 function markMsgsRead(){
   if(!S.user||!S.messages) return;
+  var changed = false;
   S.messages.forEach(function(m){
-    if(m.sender==='manager'&&m.to===S.user.name) m.read=true;
+    if(m.sender==='manager'&&m.to===S.user.name&&!m.read){ m.read=true; changed=true; }
   });
+  if(changed) saveState();
   updateMsgBadges();
 }
 function updateMsgBadges(){
@@ -2260,7 +2298,7 @@ function renderFillExcludeList(){
     row.className = 'fill-person-row' + (excl ? ' excluded' : '');
     row.innerHTML =
       '<div class="fill-person-name">' + p.name + '</div>'
-      + '<span class="role-tag ' + {miluim:'tag-miluim',sadir:'tag-sadir',katzin:'tag-katzin'}[p.role] + ' fill-person-role">' + {miluim:'מילואים',sadir:'סדיר',katzin:'איש קבע'}[p.role] + '</span>'
+      + '<span class="role-tag ' + (RC[p.role]||'') + ' fill-person-role">' + (RL[p.role]||p.role) + '</span>'
       + '<button class="fill-exclude-btn' + (excl ? ' active' : '') + '" id="excl-btn-'+p.id+'">' + (excl ? '✓ מוחרג' : 'החרג') + '</button>';
     row.querySelector('.fill-exclude-btn').onclick = (function(pid){ return function(){
       if(_fillExcluded.has(pid)) _fillExcluded.delete(pid); else _fillExcluded.add(pid);
@@ -2277,8 +2315,10 @@ function renderFillOverrideList(){
     const row = document.createElement('div');
     row.className = 'fill-person-row';
     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);';
-    const defaultVal = p.role === 'miluim' ? S.cfg.miluimMax : '';
-    const hint = p.role === 'miluim' ? String(S.cfg.miluimMax) : '—';
+    const _isLimRole = p.role==='miluim'||p.role==='katzin_s';
+    const _limMax = p.role==='miluim'?S.cfg.miluimMax:(S.cfg.katzinSMax||1);
+    const defaultVal = _isLimRole ? _limMax : '';
+    const hint = _isLimRole ? String(_limMax) : '—';
     row.innerHTML =
       '<div class="fill-person-name">' + p.name + '</div>'
       + '<span class="fill-shifts-label">מספר משמרות:</span>'
@@ -2293,10 +2333,10 @@ function renderFillOverrideList(){
 }
 
 function runAutoFill(){
-  const nm = S.people.filter(p=>p.role!=='miluim' && !_fillExcluded.has(p.id));
-  const mil = S.people.filter(p=>p.role==='miluim' && !_fillExcluded.has(p.id));
+  const nm = S.people.filter(p=>p.role!=='miluim'&&p.role!=='katzin_s' && !_fillExcluded.has(p.id));
+  const mil = S.people.filter(p=>(p.role==='miluim'||p.role==='katzin_s') && !_fillExcluded.has(p.id));
   if(nm.length===0 && mil.length>0){
-    document.getElementById('alert-msg').textContent='אין סדיר/איש קבע. המילואימניקים יעברו את המגבלה. להמשיך?';
+    document.getElementById('alert-msg').textContent='אין סדיר/איש קבע. המילואים/קבע-בלימודים יעברו את המגבלה. להמשיך?';
     document.getElementById('alert-yes').onclick=function(){closeAlert();doFillWithConfig(_fillConfigOverride,true);};
     document.getElementById('alert-modal').classList.add('open');
     return;
@@ -2771,11 +2811,13 @@ function addTzav8Period(){
 }
 function closeTzav8Edit(){
   document.getElementById('tzav8-edit-overlay').classList.remove('open');
+  saveState();
   renderPeople();
 }
 
 function clearAllFixed(){
   S.people.forEach(p=>{ p.fixed=[]; });
+  saveState();
   showToast('✓ משמרות קבועות נוקו לכולם','var(--accent)');
   if(document.getElementById('tab-people').classList.contains('active')) renderPeople();
 }
@@ -2785,6 +2827,7 @@ function toggleFixed(pid, d, s){
   if(!p.fixed) p.fixed = [];
   const idx = p.fixed.findIndex(f=>f.d===d&&f.s===s);
   if(idx>=0) p.fixed.splice(idx,1); else p.fixed.push({d,s});
+  saveState();
   renderPeople();
 }
 function getFixed(pid){ return (S.people.find(p=>p.id===pid)||{}).fixed||[]; }
@@ -2891,7 +2934,7 @@ function forceUpdate(){
 // ── EXPORT / IMPORT ─────────────────────────────────────
 function exportData(){
   var data = {
-    version: '1.1.0',
+    version: '1.1.2',
     exported: new Date().toISOString(),
     people: S.people,
     scheds: S.scheds,
