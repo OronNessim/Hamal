@@ -1869,6 +1869,7 @@ function renderSolPrefs(){
 }
 
 function renderSol(){
+  SHIFTS = getShifts();
   const p=S.user;
   document.getElementById('wlabel-s').textContent='שבוע '+wl();
   const _h=new Date().getHours();
