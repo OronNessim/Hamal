@@ -426,7 +426,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 .chat-bubble-wrap.me{align-self:flex-end;align-items:flex-end;margin-right:8px;}
 .chat-bubble-wrap.them{align-self:flex-start;align-items:flex-start;margin-left:8px;}
 .chat-name{font-size:10px;font-weight:700;color:var(--accent);margin-bottom:2px;padding:0 4px;}
-.chat-bubble{padding:9px 13px;border-radius:18px;font-size:13px;line-height:1.6;position:relative;}
+.chat-bubble{padding:9px 13px;border-radius:18px;font-size:13px;line-height:1.6;position:relative;white-space:pre-wrap;word-break:break-word;}
 .chat-bubble-wrap.me .chat-bubble{background:var(--accent2);color:#000;border-bottom-right-radius:4px;}
 .chat-bubble-wrap.them .chat-bubble{background:var(--surface2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border);}
 .chat-bubble-wrap.reply .chat-bubble{background:rgba(245,166,35,.15);color:var(--gold);border:1px solid rgba(245,166,35,.25);border-bottom-right-radius:4px;}
@@ -1106,6 +1106,8 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 
 <script>
 const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escNl(s){return esc(s).replace(/\n/g,'<br>');}
 function getShifts(){
   var ds = S.cfg.shiftDayStart || 8;
   var ns = S.cfg.shiftNightStart || 20;
@@ -1690,7 +1692,7 @@ function renderML(q){
     const same=others.includes(p.id),over=(p.role==='miluim'&&mc[p.id]>=S.cfg.miluimMax)||(p.role==='katzin_s'&&mc[p.id]>=_kSMax),sel=sc[di][si][slot]===p.id;
     const el=document.createElement('div');
     el.className='pitem'+(same?' disabled':'')+(sel?' selected':'');
-    el.innerHTML=`<div class="pinfo"><div class="pname">${p.name}${sel?' ✓':''}</div>
+    el.innerHTML=`<div class="pinfo"><div class="pname">${esc(p.name)}${sel?' ✓':''}</div>
       <div class="pmeta">${RL[p.role]}${over?' · עבר '+(p.role==='katzin_s'?_kSMax:S.cfg.miluimMax):''}${p.pref!=='any'?' · '+PL[p.pref]:''}</div></div>
       <span class="role-tag ${RC[p.role]}">${RL[p.role]}</span>`;
     if(!same)el.onclick=()=>assignP(p.id);
@@ -2149,7 +2151,7 @@ function renderMgrThread(soldierName){
     wrap.className='chat-bubble-wrap '+(isMgr?'me':'them');
     const d=new Date(msg.time);
     const t=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
-    wrap.innerHTML='<div class="chat-bubble">'+msg.text+'</div>';
+    wrap.innerHTML='<div class="chat-bubble">'+escNl(msg.text)+'</div>';
     wrap.innerHTML+='<div class="chat-meta"><span class="chat-time">'+t+'</span></div>';
     el.appendChild(wrap);
   });
@@ -2177,7 +2179,7 @@ function renderSolChat(){
     const d=new Date(msg.time);
     const t=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
     if(!isMe) wrap.innerHTML='<div class="chat-name">מפקד</div>';
-    wrap.innerHTML+='<div class="chat-bubble">'+msg.text+'</div>';
+    wrap.innerHTML+='<div class="chat-bubble">'+escNl(msg.text)+'</div>';
     wrap.innerHTML+='<div class="chat-meta"><span class="chat-time">'+t+'</span></div>';
     el.appendChild(wrap);
   });
@@ -2215,9 +2217,9 @@ function renderMgrMessages(){
     const initials=thread.name.slice(0,2);
     const item=document.createElement('div');
     item.className='thread-item'+(thread.unread?' has-unread':'');
-    item.innerHTML='<div class="thread-avatar">'+initials+'</div>'
-      +'<div class="thread-info"><div class="thread-name">'+thread.name+'</div>'
-      +'<div class="thread-preview">'+(last.sender==='manager'?'אתה: ':'')+last.text+'</div></div>'
+    item.innerHTML='<div class="thread-avatar">'+esc(initials)+'</div>'
+      +'<div class="thread-info"><div class="thread-name">'+esc(thread.name)+'</div>'
+      +'<div class="thread-preview">'+(last.sender==='manager'?'אתה: ':'')+esc(last.text)+'</div></div>'
       +'<div class="thread-meta"><span class="thread-time">'+t+'</span>'
       +(thread.unread?'<span class="thread-badge">'+thread.unread+'</span>':'')+'</div>';
     item.onclick=function(){ openMgrThread(thread.name); };
@@ -2679,9 +2681,9 @@ function renderMgrSchedule(){
     rows += `<div class="sched-edit-row">
       <input type="time" class="sched-input" value="${e.time||hh}" style="width:80px;font-weight:700;color:var(--accent);direction:ltr;"
         onchange="S.schedule[${h}].time=this.value;saveState()" />
-      <input class="sched-input" value="${e.task||''}" placeholder="שם משימה..."
+      <input class="sched-input" value="${esc(e.task)}" placeholder="שם משימה..."
         oninput="S.schedule[${h}].task=this.value;saveState()" style="flex:2;" />
-      <input class="sched-input desc" value="${e.desc||''}" placeholder="תיאור (אופציונלי)..."
+      <input class="sched-input desc" value="${esc(e.desc)}" placeholder="תיאור (אופציונלי)..."
         oninput="S.schedule[${h}].desc=this.value;saveState()" />
     </div>`;
   }
