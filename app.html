@@ -1345,7 +1345,7 @@ function addRefresh(){
   document.getElementById('rf-start').value='';document.getElementById('rf-end').value='';document.getElementById('rf-name').value='';
   renderRfList();saveState();
 }
-function delRefresh(id){S.refreshes=S.refreshes.filter(r=>r.id!==id);renderRfList();}
+function delRefresh(id){S.refreshes=S.refreshes.filter(r=>r.id!==id);renderRfList();saveState();}
 function renderRfList(){
   const l=document.getElementById('rf-list');l.innerHTML='';
   if(!S.refreshes.length){l.innerHTML='<div style="font-size:12px;color:var(--muted);padding:0 0 8px;">אין רענונים</div>';return;}
@@ -1602,6 +1602,7 @@ function delPerson(id){
   Object.values(S.scheds).forEach(w=>w.forEach(d=>d.forEach(sh=>sh.forEach((pid,i,a)=>{if(pid===id)a[i]=null;}))));
   renderPeople();
   renderStats(getDates());
+  saveState();
 }
 
 // SLOT MODAL
@@ -2794,6 +2795,7 @@ function addTzav8Period(){
 }
 function closeTzav8Edit(){
   document.getElementById('tzav8-edit-overlay').classList.remove('open');
+  saveState();
   renderPeople();
 }
 
