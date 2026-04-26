@@ -4,8 +4,8 @@ const ASSETS = [
   '/Hamal/index.html',
   '/Hamal/app.html',
   '/Hamal/manifest.json',
-  '/Hamal/icon-192.png',
-  '/Hamal/icon-512.png'
+  '/Hamal/icon-malach-192.png',
+  '/Hamal/icon-malach-512.png'
 ];
 
 self.addEventListener('install', e => {
