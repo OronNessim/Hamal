@@ -1784,11 +1784,13 @@ function doFill(override,milOnly){
     const myMax = ovrd[p.id]!==undefined ? ovrd[p.id] : max;
     return (cn[p.id]||0)<myMax;
   });shuf(mq);
-  mq.forEach(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:max;const nd=myMax-(cn[p.id]||0),wd=p.pref==='morning'?true:p.pref==='night'?false:null;for(let i=0;i<nd;i++)asgOne(p,wd);});
+  // Round-robin: assign one shift per person per round so total shifts
+  // spread evenly when total capacity > available slots.
+  {let assigned=true;while(assigned){assigned=false;mq.forEach(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:max;const wd=p.pref==='morning'?true:p.pref==='night'?false:null;if((cn[p.id]||0)<myMax&&asgOne(p,wd))assigned=true;});}}
   // assign katzin_s (limited shifts, default max=1, any shift day/night)
   const kSMax=S.cfg.katzinSMax||1;
   const sq=katzSFiltered.filter(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:kSMax;return (cn[p.id]||0)<myMax;});shuf(sq);
-  sq.forEach(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:kSMax;const nd=myMax-(cn[p.id]||0),wd=p.pref==='morning'?true:p.pref==='night'?false:null;for(let i=0;i<nd;i++)asgOne(p,wd);});
+  {let assigned=true;while(assigned){assigned=false;sq.forEach(p=>{const myMax=ovrd[p.id]!==undefined?ovrd[p.id]:kSMax;const wd=p.pref==='morning'?true:p.pref==='night'?false:null;if((cn[p.id]||0)<myMax&&asgOne(p,wd))assigned=true;});}}
   if(milOnly){renderMgr();saveState();return;}
   function gl(pool,ex=[],di=-1,si=-1){
     const wk=S.week;
