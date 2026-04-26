@@ -645,7 +645,10 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
 
     // Listen for real-time updates from Firestore
     window._fbListen = function(callback) {
-      return onSnapshot(DOC_REF, (snap) => {
+      return onSnapshot(DOC_REF, { includeMetadataChanges: true }, (snap) => {
+        // Skip callbacks triggered by our own local writes (hasPendingWrites=true)
+        // Only apply data confirmed by the server, to avoid overwriting recent local changes
+        if (snap.metadata.hasPendingWrites) return;
         if (snap.exists() && snap.data().payload) callback(JSON.parse(snap.data().payload));
       }, (e) => console.warn('Firebase listen error:', e));
     };
@@ -1927,6 +1930,7 @@ function renderSol(){
 
 function cancelAllTzav8(){
   S.people.forEach(p=>{ if(p.role==='miluim') p.tzav8Periods=[]; });
+  saveState();
   if(document.getElementById('tab-people').classList.contains('active')) renderPeople();
   const msg=document.createElement('div');
   msg.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--green);color:var(--green);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;animation:fadeIn .3s ease;';
@@ -2169,9 +2173,11 @@ function renderMgrMessages(){
 }
 function markMsgsRead(){
   if(!S.user||!S.messages) return;
+  var changed = false;
   S.messages.forEach(function(m){
-    if(m.sender==='manager'&&m.to===S.user.name) m.read=true;
+    if(m.sender==='manager'&&m.to===S.user.name&&!m.read){ m.read=true; changed=true; }
   });
+  if(changed) saveState();
   updateMsgBadges();
 }
 function updateMsgBadges(){
@@ -2811,6 +2817,7 @@ function closeTzav8Edit(){
 
 function clearAllFixed(){
   S.people.forEach(p=>{ p.fixed=[]; });
+  saveState();
   showToast('✓ משמרות קבועות נוקו לכולם','var(--accent)');
   if(document.getElementById('tab-people').classList.contains('active')) renderPeople();
 }
@@ -2820,6 +2827,7 @@ function toggleFixed(pid, d, s){
   if(!p.fixed) p.fixed = [];
   const idx = p.fixed.findIndex(f=>f.d===d&&f.s===s);
   if(idx>=0) p.fixed.splice(idx,1); else p.fixed.push({d,s});
+  saveState();
   renderPeople();
 }
 function getFixed(pid){ return (S.people.find(p=>p.id===pid)||{}).fixed||[]; }
