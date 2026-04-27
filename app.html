@@ -1506,7 +1506,7 @@ function sendAIMsg(){
   _aiHistory.push({role:'user',content:text});
   _callGeminiAPI();
 }
-var _AI_SYSTEM='אתה עוזר חכם למפקד חמ"ל שמסייע בהגדרת אלגוריתם שיבוץ משמרות אוטומטי.\n\nתפקידך:\n1. לשמוע מהמפקד מה חשוב לו בשיבוץ\n2. לשאול שאלות ממוקדות להבין את הצרכים\n3. להציע קונפיגורציה מותאמת\n\nהפרמטרים הניתנים לשינוי:\n• fillOrder — סדר עדיפות ב-4 קריטריונים (חובה לכלול את כולם):\n  - weeklyPref: כיבוד העדפות שבועיות (prefer/avoid)\n  - consec: מניעת שיבוצים רצופים\n  - balance: שוויון עומסים (מי עבד פחות — קודם)\n  - daynight: התאמה להעדפת בוקר/לילה של החייל\n• officerDayOnly — קצינים בבוקר בלבד (true/false)\n• miluimMax — מקסימום משמרות למילואים בשבוע (1–7)\n• katzinSMax — מקסימום משמרות לקצין-בלימודים בשבוע (1–7)\n• slotsDay — מספר משבצות במשמרת בוקר (1–6)\n• slotsNight — מספר משבצות במשמרת לילה (1–6)\n\nהנחיות:\n- שאל לכל היותר 2 שאלות קצרות בכל תור\n- אחרי 2–3 חילופי מסרים, הצג סיכום ובלוק config\n- שפה: עברית קצרה וישירה, גוף שני עם המפקד\n\nכשאתה מוכן להציג הגדרות, הוסף חובה:\n<config>\n{"fillOrder":["weeklyPref","consec","balance","daynight"],"officerDayOnly":true,"miluimMax":3,"katzinSMax":1,"slotsDay":2,"slotsNight":2}\n</config>';
+var _AI_SYSTEM='אתה עוזר קצר ותכליתי למפקד חמ"ל. תפקידך: אסוף העדפות שיבוץ ב-2 שאלות לכל היותר, ואז הפק מיד קונפיגורציה.\n\nפרמטרים:\n• fillOrder (חובה 4 מתוך): weeklyPref, consec, balance, daynight\n• officerDayOnly: true/false\n• miluimMax: 1-7\n• katzinSMax: 1-7\n• slotsDay: 1-6\n• slotsNight: 1-6\n\nכלל קריטי: אחרי שאלה אחת-שתיים — הפק קונפיגורציה מיד. אל תסכם שוב ואל תשאל אישור. ברגע שיש לך מספיק מידע (גם חלקי), פלוט את בלוק ה-config ישירות.\n\nבלוק config חובה להיות בפורמט מדויק זה:\n<config>\n{"fillOrder":["weeklyPref","consec","balance","daynight"],"officerDayOnly":true,"miluimMax":3,"katzinSMax":1,"slotsDay":2,"slotsNight":2}\n</config>\n\nשפה: עברית קצרה, גוף שני. אסור לחזור על עצמך.';
 var _GEMINI_MODELS=['gemini-2.5-flash','gemini-2.5-flash-lite'];
 async function _geminiRequest(model,body){
   var key=localStorage.getItem('malach_gemini_key')||'';
@@ -1523,7 +1523,11 @@ async function _callGeminiAPI(){
     var contents=_aiHistory.map(function(m){
       return{role:m.role==='assistant'?'model':m.role,parts:[{text:m.content}]};
     });
-    var body={system_instruction:{parts:[{text:_AI_SYSTEM}]},contents:contents,generationConfig:{maxOutputTokens:1024}};
+    var userTurns=_aiHistory.filter(function(m){return m.role==='user';}).length;
+    if(userTurns>=2&&!_aiConfig){
+      contents=contents.concat([{role:'user',parts:[{text:'עצור — הפק עכשיו את בלוק ה-config המלא ישירות, ללא שאלות נוספות.'}]}]);
+    }
+    var body={system_instruction:{parts:[{text:_AI_SYSTEM}]},contents:contents,generationConfig:{maxOutputTokens:2048}};
     var resp, lastErr;
     for(var mi=0;mi<_GEMINI_MODELS.length;mi++){
       resp=await _geminiRequest(_GEMINI_MODELS[mi],body);
