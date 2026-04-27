@@ -1502,12 +1502,12 @@ async function _callGeminiAPI(){
     var contents=_aiHistory.map(function(m){
       return{role:m.role==='assistant'?'model':m.role,parts:[{text:m.content}]};
     });
-    var resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+_GEMINI_KEY,{
+    var resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+_GEMINI_KEY,{
       method:'POST',
       headers:{'content-type':'application/json'},
       body:JSON.stringify({system_instruction:{parts:[{text:_AI_SYSTEM}]},contents:contents,generationConfig:{maxOutputTokens:1024}})
     });
-    if(!resp.ok){var err=await resp.json().catch(function(){return{};});throw new Error((err.error&&err.error.message)||'שגיאת API ('+resp.status+')');}
+    if(!resp.ok){var errData=await resp.json().catch(function(){return{};});throw new Error((errData.error&&errData.error.message)||'שגיאת API ('+resp.status+')');}
     var data=await resp.json();
     var text=(data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts&&data.candidates[0].content.parts[0]&&data.candidates[0].content.parts[0].text)||'';
     _aiHistory.push({role:'assistant',content:text});
