@@ -1,4 +1,4 @@
-const CACHE = 'malach-v1.1.5';
+const CACHE = 'malach-v1.1.6';
 const ASSETS = [
   '/Hamal/',
   '/Hamal/index.html',
