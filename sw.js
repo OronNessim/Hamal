@@ -1,11 +1,11 @@
-const CACHE = 'hamal-v1.1.2';
+const CACHE = 'malach-v1.1.5';
 const ASSETS = [
   '/Hamal/',
   '/Hamal/index.html',
   '/Hamal/app.html',
   '/Hamal/manifest.json',
-  '/Hamal/icon-192.png',
-  '/Hamal/icon-512.png'
+  '/Hamal/icon-malach-192.png',
+  '/Hamal/icon-malach-512.png'
 ];
 
 self.addEventListener('install', e => {
