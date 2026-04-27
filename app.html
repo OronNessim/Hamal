@@ -1493,6 +1493,12 @@ function sendAIMsg(){
   _callGeminiAPI();
 }
 var _AI_SYSTEM='אתה עוזר חכם למפקד חמ"ל שמסייע בהגדרת אלגוריתם שיבוץ משמרות אוטומטי.\n\nתפקידך:\n1. לשמוע מהמפקד מה חשוב לו בשיבוץ\n2. לשאול שאלות ממוקדות להבין את הצרכים\n3. להציע קונפיגורציה מותאמת\n\nהפרמטרים הניתנים לשינוי:\n• fillOrder — סדר עדיפות ב-4 קריטריונים (חובה לכלול את כולם):\n  - weeklyPref: כיבוד העדפות שבועיות (prefer/avoid)\n  - consec: מניעת שיבוצים רצופים\n  - balance: שוויון עומסים (מי עבד פחות — קודם)\n  - daynight: התאמה להעדפת בוקר/לילה של החייל\n• officerDayOnly — קצינים בבוקר בלבד (true/false)\n• miluimMax — מקסימום משמרות למילואים בשבוע (1–7)\n• katzinSMax — מקסימום משמרות לקצין-בלימודים בשבוע (1–7)\n• slotsDay — מספר משבצות במשמרת בוקר (1–6)\n• slotsNight — מספר משבצות במשמרת לילה (1–6)\n\nהנחיות:\n- שאל לכל היותר 2 שאלות קצרות בכל תור\n- אחרי 2–3 חילופי מסרים, הצג סיכום ובלוק config\n- שפה: עברית קצרה וישירה, גוף שני עם המפקד\n\nכשאתה מוכן להציג הגדרות, הוסף חובה:\n<config>\n{"fillOrder":["weeklyPref","consec","balance","daynight"],"officerDayOnly":true,"miluimMax":3,"katzinSMax":1,"slotsDay":2,"slotsNight":2}\n</config>';
+var _GEMINI_MODELS=['gemini-2.5-flash','gemini-2.5-flash-lite'];
+async function _geminiRequest(model,body){
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+_GEMINI_KEY,{
+    method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)
+  });
+}
 async function _callGeminiAPI(){
   var sendBtn=document.getElementById('ai-send-btn');
   var inp=document.getElementById('ai-input');
@@ -1502,12 +1508,17 @@ async function _callGeminiAPI(){
     var contents=_aiHistory.map(function(m){
       return{role:m.role==='assistant'?'model':m.role,parts:[{text:m.content}]};
     });
-    var resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+_GEMINI_KEY,{
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify({system_instruction:{parts:[{text:_AI_SYSTEM}]},contents:contents,generationConfig:{maxOutputTokens:1024}})
-    });
-    if(!resp.ok){var errData=await resp.json().catch(function(){return{};});throw new Error((errData.error&&errData.error.message)||'שגיאת API ('+resp.status+')');}
+    var body={system_instruction:{parts:[{text:_AI_SYSTEM}]},contents:contents,generationConfig:{maxOutputTokens:1024}};
+    var resp, lastErr;
+    for(var mi=0;mi<_GEMINI_MODELS.length;mi++){
+      resp=await _geminiRequest(_GEMINI_MODELS[mi],body);
+      if(resp.ok) break;
+      var errData=await resp.json().catch(function(){return{};});
+      lastErr=(errData.error&&errData.error.message)||'שגיאת API ('+resp.status+')';
+      var isOverload=resp.status===503||resp.status===429;
+      if(!isOverload) throw new Error(lastErr);
+    }
+    if(!resp.ok) throw new Error(lastErr||'שגיאת API');
     var data=await resp.json();
     var text=(data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts&&data.candidates[0].content.parts[0]&&data.candidates[0].content.parts[0].text)||'';
     _aiHistory.push({role:'assistant',content:text});
