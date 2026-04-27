@@ -944,7 +944,7 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
           <div style="padding:10px 14px 14px;">
             <div style="font-size:11px;color:var(--muted2);margin-bottom:10px;line-height:1.6;">שוחח עם ה-AI בחופשיות כדי ליצור תבנית שיבוץ מותאמת. מפתח ה-API נשמר במכשיר שלך בלבד.</div>
             <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-              <input type="password" id="ai-api-key" placeholder="sk-ant-... (מפתח API של Claude)"
+              <input type="text" id="ai-api-key" placeholder="sk-ant-... (מפתח API של Claude)" autocomplete="off" spellcheck="false"
                 style="flex:1;padding:9px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Heebo',sans-serif;font-size:12px;direction:ltr;outline:none;transition:border-color .2s;"
                 oninput="saveAIKey(this.value)" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'"/>
               <button class="bsm" onclick="openAIConfig()"
