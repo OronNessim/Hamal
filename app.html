@@ -942,11 +942,17 @@ header{position:sticky;top:0;z-index:100;overflow:hidden;}
         <div class="sett-sec" id="ai-config-sec">
           <div class="sett-hdr">🤖 הגדרת שיבוץ עם AI</div>
           <div style="padding:10px 14px 14px;">
-            <div style="font-size:11px;color:var(--muted2);margin-bottom:12px;line-height:1.6;">שוחח עם ה-AI בחופשיות כדי ליצור תבנית שיבוץ מותאמת לצרכים שלך.</div>
-            <button onclick="openAIConfig()"
-              style="width:100%;padding:11px;border-radius:11px;background:linear-gradient(135deg,rgba(0,212,170,.18),rgba(0,212,170,.08));border:1px solid rgba(0,212,170,.4);color:var(--accent);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">
-              🤖 פתח שיחה עם AI
-            </button>
+            <div style="font-size:11px;color:var(--muted2);margin-bottom:10px;line-height:1.6;">הזן מפתח Gemini API פעם אחת — יישמר במכשיר בלבד, לא בענן.</div>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+              <input type="text" id="ai-api-key" placeholder="AIza... (מפתח מ-aistudio.google.com)" autocomplete="off" spellcheck="false"
+                style="flex:1;padding:9px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Heebo',sans-serif;font-size:12px;direction:ltr;outline:none;transition:border-color .2s;"
+                oninput="saveAIKey(this.value)" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'"/>
+              <button onclick="openAIConfig()"
+                style="background:linear-gradient(135deg,rgba(0,212,170,.18),rgba(0,212,170,.08));border:1px solid rgba(0,212,170,.4);color:var(--accent);white-space:nowrap;padding:8px 14px;border-radius:10px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+                🤖 שיחה
+              </button>
+            </div>
+            <div id="ai-key-status" style="font-size:10px;color:var(--muted);min-height:14px;"></div>
           </div>
         </div>
 
@@ -1427,6 +1433,8 @@ function renderSettings(){
   document.getElementById('shift-night-start').value=S.cfg.shiftNightStart||20;
   renderRfList();
   renderFillOrder();
+  var ki=document.getElementById('ai-api-key');
+  if(ki){var sk=localStorage.getItem('malach_gemini_key')||'';ki.value=sk;var st=document.getElementById('ai-key-status');if(st)st.textContent=sk?'✓ מפתח נשמר במכשיר':'';}
 }
 
 var FILL_ORDER_LABELS={weeklyPref:'⭐ העדפות שבועיות',consec:'🔄 אי-רצף',balance:'⚖️ שוויון עומסים',daynight:'🌅 העדפת בוקר/לילה'};
@@ -1461,8 +1469,14 @@ function renderFillOrder(){
 
 // ── AI CONFIG ─────────────────────────────────────────────────────────────────
 var _aiHistory=[], _aiConfig=null;
-var _GEMINI_KEY='AIzaSyC5u4pch3rSQASmt8qCg-QKH2cT8M1b-Mc';
+function saveAIKey(v){
+  var k=v?v.trim():'';
+  if(k) localStorage.setItem('malach_gemini_key',k); else localStorage.removeItem('malach_gemini_key');
+  var st=document.getElementById('ai-key-status');
+  if(st) st.textContent=k?'✓ מפתח נשמר במכשיר':'';
+}
 function openAIConfig(){
+  if(!localStorage.getItem('malach_gemini_key')){showToast('יש להזין מפתח Gemini API תחילה','var(--gold)');return;}
   _aiHistory=[];_aiConfig=null;
   document.getElementById('ai-messages').innerHTML='';
   document.getElementById('ai-config-bar').style.display='none';
@@ -1495,7 +1509,8 @@ function sendAIMsg(){
 var _AI_SYSTEM='אתה עוזר חכם למפקד חמ"ל שמסייע בהגדרת אלגוריתם שיבוץ משמרות אוטומטי.\n\nתפקידך:\n1. לשמוע מהמפקד מה חשוב לו בשיבוץ\n2. לשאול שאלות ממוקדות להבין את הצרכים\n3. להציע קונפיגורציה מותאמת\n\nהפרמטרים הניתנים לשינוי:\n• fillOrder — סדר עדיפות ב-4 קריטריונים (חובה לכלול את כולם):\n  - weeklyPref: כיבוד העדפות שבועיות (prefer/avoid)\n  - consec: מניעת שיבוצים רצופים\n  - balance: שוויון עומסים (מי עבד פחות — קודם)\n  - daynight: התאמה להעדפת בוקר/לילה של החייל\n• officerDayOnly — קצינים בבוקר בלבד (true/false)\n• miluimMax — מקסימום משמרות למילואים בשבוע (1–7)\n• katzinSMax — מקסימום משמרות לקצין-בלימודים בשבוע (1–7)\n• slotsDay — מספר משבצות במשמרת בוקר (1–6)\n• slotsNight — מספר משבצות במשמרת לילה (1–6)\n\nהנחיות:\n- שאל לכל היותר 2 שאלות קצרות בכל תור\n- אחרי 2–3 חילופי מסרים, הצג סיכום ובלוק config\n- שפה: עברית קצרה וישירה, גוף שני עם המפקד\n\nכשאתה מוכן להציג הגדרות, הוסף חובה:\n<config>\n{"fillOrder":["weeklyPref","consec","balance","daynight"],"officerDayOnly":true,"miluimMax":3,"katzinSMax":1,"slotsDay":2,"slotsNight":2}\n</config>';
 var _GEMINI_MODELS=['gemini-2.5-flash','gemini-2.5-flash-lite'];
 async function _geminiRequest(model,body){
-  return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+_GEMINI_KEY,{
+  var key=localStorage.getItem('malach_gemini_key')||'';
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key,{
     method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)
   });
 }
