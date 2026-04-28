@@ -2078,12 +2078,15 @@ function doFill(override,milOnly){
   }
   function asgOne(p,wd){
     const wk=S.week;
-    let sl=emSlots().filter(x=>{
-      if(sc[x.d][x.s].includes(p.id)) return false;
-      if(S.cfg.compositionMode){const req=getReqPos(x.s,x.sl);if(req&&p.position!==req)return false;}
-      return true;
-    });
+    let sl=emSlots().filter(x=>!sc[x.d][x.s].includes(p.id));
     sl.sort((a,b)=>{
+      // Composition mode: prefer matched slots first (soft enforcement — don't block)
+      if(S.cfg.compositionMode){
+        const reqA=getReqPos(a.s,a.sl),reqB=getReqPos(b.s,b.sl);
+        const mA=(!reqA||p.position===reqA)?0:1;
+        const mB=(!reqB||p.position===reqB)?0:1;
+        if(mA!==mB) return mA-mB;
+      }
       for(const crit of getFillOrder()){
         if(crit==='weeklyPref'){
           const score=x=>x==='prefer'?0:x==='neutral'?1:2;
