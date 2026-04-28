@@ -2167,7 +2167,10 @@ function doFill(override,milOnly){
           if(sc[d][s][sl]!==null) continue;
           const reqPos=getReqPos(s,sl);
           const ex=sc[d][s].filter(x=>x!==null);
-          let pool=[...sadirFiltered,...nightKatz];
+          // Full pool: sadir + night-katzin + any miluim/katzin_s with remaining capacity
+          const milAvail=milFiltered.filter(p=>(cn[p.id]||0)<(ovrd[p.id]!==undefined?ovrd[p.id]:max));
+          const ksSAvail=katzSFiltered.filter(p=>(cn[p.id]||0)<(ovrd[p.id]!==undefined?ovrd[p.id]:kSMax));
+          let pool=[...sadirFiltered,...nightKatz,...milAvail,...ksSAvail];
           if(reqPos){
             const matched=pool.filter(p=>p.position===reqPos);
             if(matched.length) pool=matched;
