@@ -2113,6 +2113,10 @@ function doFill(override,milOnly){
       if(emIdx>=0){ sc[d][s][emIdx]=p.id; cn[p.id]=(cn[p.id]||0)+1; }
     });
   });
+  // Enforce officerDayOnly: remove katzin from any existing night slots
+  if(S.cfg.officerDayOnly){
+    for(let d=0;d<7;d++){const sps=S.cfg.slotsNight;for(let sl=0;sl<sps;sl++){const pid=sc[d][1][sl];if(pid===null)continue;const p=byId(pid);if(p&&p.role==='katzin'){sc[d][1][sl]=null;cn[pid]=Math.max(0,(cn[pid]||0)-1);}}}
+  }
   const excl = window._fillExcludedGlobal || new Set();
   const ovrd = window._fillOverridesGlobal || {};
   const max=S.cfg.miluimMax;
@@ -2188,6 +2192,7 @@ function doFill(override,milOnly){
             const p1=gl([...sadirFiltered,...nightKatz],ex,d,s),p2=gl([...sadirFiltered,...nightKatz],ex.concat(p1?[p1.id]:[]),d,s);
             if(p1){sc[d][s][em[0]]=p1.id;cn[p1.id]=(cn[p1.id]||0)+1;}
             if(p2){sc[d][s][em[1]]=p2.id;cn[p2.id]=(cn[p2.id]||0)+1;}
+            continue;
           } else {
             const sl=em[0],ex0=ex[0]?byId(ex[0]):null;let c=null;
             if(isDay&&ex0&&ex0.role==='katzin')c=gl(sadirFiltered,ex,d,s);
